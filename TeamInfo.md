@@ -12,7 +12,7 @@
 | Member1     |  bachina3@illinois.edu |
 | Member2     |       Akshit Sharma    |
 | Member2     |  sharma89@illinois.edu |
-| Member3     |        Lavan Puri      |
+| Member3     |      Lavanya Puri      |
 | Member3     |    lpuri2@illinois.edu |
 
 ## Project Information
