@@ -12,17 +12,19 @@
 | Member1     |  bachina3@illinois.edu |
 | Member2     |       Akshit Sharma    |
 | Member2     |  sharma89@illinois.edu |
-| Member3     |        Lavan Puri      |
+| Member3     |      Lavanya Puri      |
 | Member3     |    lpuri2@illinois.edu |
 
 ## Project Information
 
 |   Info      |        Description     |
 | ----------- | ---------------------- |
-|  Title      |       ProjectTitle     |
+|  Title      |      Insurance Hub     |
 | System URL  |      link_to_system    |
 | Video Link  |      link_to_video     |
 
 ## Project Summary
 
-This is a summary of the project!
+Insurance Hub is an insurance aggregator that provides a one-stop 
+solution for users to search, compare and purchase different insurances. 
+It provides a digital platform (website) where users can compare insurance policies from major insurance companies. It offers several insurance plans like life, health, vehicle, and travel.
