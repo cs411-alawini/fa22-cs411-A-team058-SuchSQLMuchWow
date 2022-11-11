@@ -7,37 +7,46 @@ const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 
 
 router.post("/register", async (req, res) => {
-    const { email, password, firstName, lastName, customerType, secQn, secAns, street, city, state, zipcode, gender, maritalStatus} = req.body;  
+    const { email, password, firstname, lastname, securityQuestion, securityAns, city, state, zip, middlename, country} = req.body;
+    
+    console.log(req.body)
 
-    const userToBeCreated = await Users.findOne({ where: { username: username } });
+    try {
 
-    if (userToBeCreated)
-    {
-      res.json({ error: "There is already an existing user with the same username. Please select a different username." });
-      return;
-    } 
-
-    bcrypt.hash(password, 5).then((hashedPassword) => {
-      bcrypt.hash(secAns, 5).then((hashedAns) => {
-        Users.create({
-          username: username,
-          password: hashedPassword,
-          email: email,        
-          sec_qn: secQn,
-          sec_ans: hashedAns,
-          cust_type: customerType,
-          first_name: firstName,
-          last_name: lastName,
-          street: street,
-          city: city,
-          state: state,
-          zipcode: zipcode,
-          gender: gender,
-          marital_stat: maritalStatus,        
-
-        }); })    
+      const userToBeCreated = await User.findOne({ where: { email: email } });
+  
+      if (userToBeCreated)
+      {
+        res.json({ error: "This Account is already existing. Please Log in to continue" });
+        return;
+      } 
+  
+      let hashedPassword = await bcrypt.hash(password, 5)
+      let hashedAns = await  bcrypt.hash(securityAns, 5)
+  
+      let user = User.create({
+        name: `${firstname} ${middlename} ${lastname}`,
+        password: hashedPassword,
+        email,    
+        security_question: securityQuestion,
+        security_answer: hashedAns,
+        first_name: firstname,
+        last_name: lastname,
+        middle_name: middlename,
+        city,
+        state,
+        country,
+        zip,
+        marital_status: 'Single',
+        user_type: 2
+  
+      })
       res.json("User is created.");  
-    });  
+
+    } catch(e) {
+      console.log(e)
+    }
+
 
   });
 

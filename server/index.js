@@ -16,6 +16,8 @@ const routeUsers = require("./routes/Users");
 app.use("/users", routeUsers);
 const routeInsPolicy = require("./routes/InsurancePolicy");
 app.use("/insurance", routeInsPolicy);
+const routeAPI = require("./routes/API")
+app.use('/api', routeAPI)
 
 
 

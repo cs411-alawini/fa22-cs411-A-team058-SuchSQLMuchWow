@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       }, 
       marital_status: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       user_type: {
