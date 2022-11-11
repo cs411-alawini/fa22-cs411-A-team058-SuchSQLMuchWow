@@ -3,7 +3,7 @@ import './Header.css'
 
 export class Header extends React.Component {
 
-    constructor(props) {
+    constructor(props: {}) {
         super(props)
     }
 

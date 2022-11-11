@@ -1,5 +1,5 @@
 import './App.css';
-import {Header} from './components/Header/Header.js'
+import {Header} from './components/Header/Header'
 import {BrowserRouter as Router, Outlet} from 'react-router-dom'
 
 function App() {

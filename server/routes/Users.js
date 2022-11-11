@@ -7,7 +7,7 @@ const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 
 
 router.post("/register", async (req, res) => {
-    const { username, email, password, firstName, lastName, customerType, secQn, secAns, street, city, state, zipcode, gender, maritalStatus} = req.body;  
+    const { email, password, firstName, lastName, customerType, secQn, secAns, street, city, state, zipcode, gender, maritalStatus} = req.body;  
 
     const userToBeCreated = await Users.findOne({ where: { username: username } });
 

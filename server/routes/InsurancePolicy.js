@@ -1,12 +1,12 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
-const { InsurancePolicyModel } = require("../models"); // import  model
+const { InsurancePolicy } = require("../models"); // import  model
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 var Sequelize = require("sequelize");
 
-router.get("/getpolicy", async (req, res) => {
+router.get("/getPolicies", async (req, res) => {
 
-    const policyList = await InsurancePolicyModel.findAll({ where: { UserId: req.user.id }});
+    const policyList = await InsurancePolicy.findAll();
     res.json({returnValue: policyList});
 
 });

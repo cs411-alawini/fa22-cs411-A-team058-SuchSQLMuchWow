@@ -14,7 +14,7 @@ app.use(express.static(__dirname));
 // Init routers
 const routeUsers = require("./routes/Users");
 app.use("/users", routeUsers);
-const routeInsPolicy = require("./routes/InsPolicy");
+const routeInsPolicy = require("./routes/InsurancePolicy");
 app.use("/insurance", routeInsPolicy);
 
 
