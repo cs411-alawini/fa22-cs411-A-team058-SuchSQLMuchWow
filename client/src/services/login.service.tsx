@@ -50,8 +50,8 @@ export class LoginService {
             let {token, role} = (await res.json())
             console.log(token)
             sessionStore.update(state => ({token, role}))
-            localStorage.setItem('jwtToken', token)
-            localStorage.setItem('role', role)
+            await localStorage.setItem('jwtToken', token)
+            await localStorage.setItem('role', role)
         } else
             throw Error((await res.json()).error)
 

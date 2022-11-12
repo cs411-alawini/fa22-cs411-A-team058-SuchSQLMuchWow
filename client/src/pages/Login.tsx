@@ -26,7 +26,7 @@ export function Login() {
     async function onSubmit() {
         try {
             await loginService.login(formState)
-            navigate('/')
+            navigate('/insurancelist')
         } catch(e: any) {
             alert(e.message)
         }
