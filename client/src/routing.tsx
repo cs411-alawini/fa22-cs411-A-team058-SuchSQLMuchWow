@@ -5,6 +5,7 @@ import { RegisterUser } from './pages/Register'
 import { Login } from './pages/Login'
 import InsuranceList from "./pages/InsuranceList";
 import EditInsurance from "./pages/EditInsurance";
+import Dashboard from "./pages/Dashboard";
 
 export const router = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
         {
           path: '/editInsurance/:id',
           element: <EditInsurance />
+        },
+        {
+          path: '/dashboard',
+          element: <Dashboard />
         }
       ]
     },

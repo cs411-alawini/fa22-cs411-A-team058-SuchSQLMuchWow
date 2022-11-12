@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import _ from 'lodash';
 import { PolicyService } from '../../services/policy.service';
+import {UserActivityService} from "../../services/userActivity.service";
 import './InsuranceList.css';
 
 const InsuranceList = () => {
@@ -14,6 +15,7 @@ const InsuranceList = () => {
     const [isPopupVisible, setPopupVisibility] = useState(false)
     const navigate = useNavigate();
     const policyService = new PolicyService()
+    const userActivityService = new UserActivityService()
 
     const delayedAPIFetch = useCallback(_.debounce((query) => fetchAllPolicies(query), 500), []);
     const handleOnChange = (event) => {
@@ -46,6 +48,10 @@ const InsuranceList = () => {
         setPopupVisibility(false)
     }
 
+    const trackInsuranceClick = (policyId) => {
+        userActivityService.reportUserActivity(searchText, policyId).catch(console.error)
+    }
+
     const displayAllPolicies = () => {
 
         if (policyList.length<=0) return <Typography variant="h5">No Policies Available</Typography>
@@ -54,7 +60,7 @@ const InsuranceList = () => {
                 let companyObject: any
                 companyObject = Company
                 return (
-                    <div className="insuranceContainer" key={id}>
+                    <div className="insuranceContainer" key={id} onClick={() => trackInsuranceClick(id)}>
                         <div className="insuranceHeader">
                             <Typography variant="h5">{name}</Typography>
                             <Typography>{companyObject.name}</Typography>

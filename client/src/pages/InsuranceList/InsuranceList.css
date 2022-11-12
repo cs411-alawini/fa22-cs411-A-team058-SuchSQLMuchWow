@@ -38,6 +38,10 @@
     position: relative;
 }
 
+.insuranceContainer:hover {
+    cursor: pointer;
+}
+
 .insuranceHeader {
     display: flex;
     flex-direction: row;
