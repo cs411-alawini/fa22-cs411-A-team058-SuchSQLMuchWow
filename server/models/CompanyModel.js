@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     Company.associate = (models) => {
 
         Company.hasMany(models.InsurancePolicy, {foreignKey: 'company_id', onDelete: 'CASCADE', OnUpdate: "CASCADE"})
-
+        Company.belongsTo(models.Employ, {foreignKey: 'company_id'})
     }
     
     return Company;
