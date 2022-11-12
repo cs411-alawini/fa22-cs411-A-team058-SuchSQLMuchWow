@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
+import _ from 'lodash';
 import { PolicyService } from '../../services/policy.service';
 import './ViewInsurance.css';
 
@@ -9,13 +10,14 @@ const ViewInsurance = () => {
     const [searchText, updateSearchText] = useState('')
     const policyServer = new PolicyService()
 
+    const delayedAPIFetch = useCallback(_.debounce((query) => fetchAllPolicies(query), 500), []);
     const handleOnChange = (event) => {
-        console.log('dccd')
         updateSearchText(event.target.value)
+        delayedAPIFetch(event.target.value)
     }
 
-    const fetchAllPolicies = async () => {
-        const response = await policyServer.getAllPolicies()
+    const fetchAllPolicies = async (query) => {
+        const response = await policyServer.getAllPolicies(query)
         updatePolicyList(response.data)
     }
 
@@ -46,7 +48,7 @@ const ViewInsurance = () => {
     }
 
     useEffect(() => {
-        fetchAllPolicies().catch(console.error)
+        fetchAllPolicies(searchText).catch(console.error)
     }, [])
 
     return(
