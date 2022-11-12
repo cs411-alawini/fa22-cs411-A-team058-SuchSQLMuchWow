@@ -92,9 +92,9 @@ router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),
 router.put('/updatePolicy', passport.authenticate('jwt', { session: false }), async (req, res) => {
 
     try {
-        const {id, name, coverAmt, premiumPA, premiumPM} = req.body
+        const {id, name, cover_amt, premium_per_annum, premium_per_month} = req.body
 
-        await InsurancePolicy.update({name, cover_amt: coverAmt, premium_per_annum: premiumPA, premium_per_month: premiumPM}, {where: {id}});
+        await InsurancePolicy.update({name, cover_amt, premium_per_annum, premium_per_month}, {where: {id}});
 
         res.status(200).send("Policy updated successfully")
 
