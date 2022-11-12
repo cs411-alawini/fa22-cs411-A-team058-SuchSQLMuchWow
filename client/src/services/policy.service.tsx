@@ -1,7 +1,7 @@
 import {sessionQuery} from '../stores/session.query'
 
 export class PolicyService {
-    URL = 'http://localhost:5000/'
+    URL = 'http://localhost:8888/'
 
     async addPolicy(formData) {
         const data = {
@@ -25,7 +25,7 @@ export class PolicyService {
         let res = await fetch(`${this.URL}insurance/getAllPolicies`, {
             method: 'GET',
             headers: {
-                "Authorization": `Bearer ${sessionQuery.token}`
+                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
             }
         })
         let body = res.json()

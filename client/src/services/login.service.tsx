@@ -6,7 +6,7 @@ export interface SecurityQuestion {
 }
 
 export class LoginService {
-    URL = 'http://localhost:5000/'
+    URL = 'http://localhost:8888/'
 
     async fetchSecurityQuestions() {
         let res = await fetch(`${this.URL}api/getSecurityQuestions`, {
@@ -50,6 +50,7 @@ export class LoginService {
             let {token, role} = (await res.json())
             console.log(token)
             sessionStore.update(state => ({token, role}))
+            localStorage.setItem('jwtToken', token)
         } else
             throw Error((await res.json()).error)
 
