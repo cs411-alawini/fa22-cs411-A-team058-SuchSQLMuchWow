@@ -22,3 +22,13 @@
 .links > span {
     padding-right: 10px;
 }
+
+.navContainer > a {
+    margin-right: 10px;
+    border: 1px white solid;
+    border-radius: 5px;
+}
+
+.navContainer > a > button {
+    color: white;
+}
