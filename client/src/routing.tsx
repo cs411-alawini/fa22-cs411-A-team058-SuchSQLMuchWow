@@ -23,10 +23,10 @@ export const router = createBrowserRouter([
           path: '/login',
           element: <Login />
         },
-          {
-            path: '/insurancelist',
-            element: <ViewInsurance />
-          }
+        {
+          path: '/insurancelist',
+          element: <ViewInsurance />
+        }
       ]
     },
   ]);
