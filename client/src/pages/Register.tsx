@@ -11,6 +11,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button'
 import { ValidationGroup, Validate, AutoDisabler } from 'mui-validate';
 import {LoginService } from '../services/login.service'
+import { Navigate } from 'react-router-dom'
 
 
 
@@ -20,7 +21,7 @@ export class RegisterUser extends React.Component {
     constructor(props) {
         super(props)
         this.loginService = new LoginService()
-        this.state = {values: {securityQuestion: 1, middlename: ''}, securityQuestions: []}
+        this.state = {values: {securityQuestion: 1, middlename: ''}, securityQuestions: [], registrationStatus: false}
 
         this.onChangeHandler = this.onChangeHandler.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
@@ -42,9 +43,17 @@ export class RegisterUser extends React.Component {
         }))
     }
 
-    onSubmit() {
-        console.log(this.state['values'])
-        this.loginService.registerUser(this.state['values'])
+    async onSubmit() {
+        try {
+            console.log(this.state['values'])
+            let res = await this.loginService.registerUser(this.state['values'])
+            console.log(res)
+            alert('User created successfully')
+            this.setState({registrationStatus: true})
+        } catch(e: any) {
+            // console.log(e)
+            alert(e.message)
+        }
     }
 
     render() {
@@ -162,6 +171,8 @@ export class RegisterUser extends React.Component {
 
 
                 </Container>
+
+                {this.state['registrationStatus'] ? <Navigate to='/login'/> : null}
 
 
             </div>

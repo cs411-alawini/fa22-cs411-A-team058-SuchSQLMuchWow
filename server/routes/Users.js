@@ -2,8 +2,48 @@ const bcrypt = require("bcrypt");       // import bcrypt for password hashing
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
 const { User } = require("../models"); // import users model
-const { sign } = require("jsonwebtoken"); // import token
-const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy;
+const jwt = require('jsonwebtoken');
+
+async function isValidPassword(hashedPassword, password) {
+  let result = await bcrypt.compare(password, hashedPassword)
+  if(result)
+      return true
+  
+  return false
+} 
+
+passport.use(new LocalStrategy(
+  {
+    usernameField: 'email',
+    passwordField: 'password',
+    session: false
+  },
+  async (email, password, done) => {
+    try {
+      const user = await User.findOne({ where: { email } , attributes: ['email', 'id', 'user_type', 'password']});
+
+      if (!user) {
+        return done(null, false, { message: 'User not found' });
+      }
+
+      const validate = await isValidPassword(user.password, password);
+
+      if (!validate) {
+        return done(null, false, { message: 'Wrong Password' });
+      }
+
+      return done(null, user, { message: 'Logged in Successfully' });
+    } catch (error) {
+      return done(error);
+    }
+  }
+)
+);
+
+
+
 
 
 router.post("/register", async (req, res) => {
@@ -17,7 +57,7 @@ router.post("/register", async (req, res) => {
   
       if (userToBeCreated)
       {
-        res.json({ error: "This Account is already existing. Please Log in to continue" });
+        res.status(500).send({ error: "This Account is already existing. Please Log in to continue" })
         return;
       } 
   
@@ -50,11 +90,11 @@ router.post("/register", async (req, res) => {
 
   });
 
-router.put("/edit", checkedIfLoggedIn, async (req, res) => {
-  const { username, email } = req.body;
-  await Users.update ({username: username, email:email}, {where: {id: req.user.id}});
-  res.json("Updated");  
-});
+// router.put("/edit", checkedIfLoggedIn, async (req, res) => {
+//   const { username, email } = req.body;
+//   await Users.update ({username: username, email:email}, {where: {id: req.user.id}});
+//   res.json("Updated");  
+// });
 
 router.post("/editpwsecqn", async (req, res) => {
   
@@ -83,82 +123,73 @@ router.post("/editpwsecqn", async (req, res) => {
   }
 );
 
-router.put("/editpassword", checkedIfLoggedIn, async (req, res) => {
+// router.put("/editpassword", checkedIfLoggedIn, async (req, res) => {
   
-  const { oldPassword, newPassword } = req.body;    
-  const userToChangePassword = await Users.findByPk(req.user.id );                  
+//   const { oldPassword, newPassword } = req.body;    
+//   const userToChangePassword = await Users.findByPk(req.user.id );                  
 
-  // check if correct password
-  bcrypt.compare(oldPassword, userToChangePassword.password).then(async (correctPassword) => {
-    if (!correctPassword) 
-    {
-      res.json({ error: "Incorrect password entered. Please re-enter the password." });
-      return;
-    }
-    bcrypt.hash(newPassword, 5).then((hashedValue) => {
-      Users.update(
-        { password: hashedValue },
-        { where: { id: req.user.id  } }
-      );      
-      res.json("Updated Password");        
-    });
-  });   
-});
+//   // check if correct password
+//   bcrypt.compare(oldPassword, userToChangePassword.password).then(async (correctPassword) => {
+//     if (!correctPassword) 
+//     {
+//       res.json({ error: "Incorrect password entered. Please re-enter the password." });
+//       return;
+//     }
+//     bcrypt.hash(newPassword, 5).then((hashedValue) => {
+//       Users.update(
+//         { password: hashedValue },
+//         { where: { id: req.user.id  } }
+//       );      
+//       res.json("Updated Password");        
+//     });
+//   });   
+// });
   
 
-router.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+router.post('/login', async (req, res, next) => {
+    passport.authenticate(
+      'local',
+      async (err, user, info) => {
+        try {
+          if (err || !user) {
+            return res.status(500).send({error: 'Invalid email or password.'})
+          }
 
-    const userToBeCreated = await Users.findOne({ where: { USERNAME: username } });
+          req.login(
+            user,
+            { session: false },
+            async (error) => {
+              if (error) return next(error);
 
-    try{
-      if (!userToBeCreated)
-      {
-        res.json({ error: "This username is not found. Please re-enter the username." });
-        return;
-      } 
-        
-    // check if correct password
-    bcrypt.compare(password, userToBeCreated.password).then(async (correctPassword) => {
-      if (!correctPassword) 
-      {
-        res.json({ error: "Incorrect password entered. Please re-enter the password." });
-        return;
+              const body = { id: user.id, email: user.email, role: user.user_type };
+              const token = jwt.sign({ user: body }, 'TOP_SECRET');
+
+              return res.json({ token });
+            }
+          );
+        } catch (error) {
+          return next(error);
+        }
       }
-  
-      // create access token to send it back to the client for further processing
-      const accessToken = sign(
-        { username: userToBeCreated.username, id: userToBeCreated.id },
-        "qwertyzxcvb"
-      );
-      
-      // return user name, id and access token for local storage in the front end
-      res.json({ id: userToBeCreated.id, username: userToBeCreated.username, token: accessToken});
-    });
-    
-    }
-    catch(err)
-    {
-      res.json(err);
-    }
-    
-  });
-
-router.get("/getuserinfo/:id", checkedIfLoggedIn, async (req, res) => {
-  
-  const userInfo = await Users.findByPk(req.user.id);        
-
-  if(!userInfo)
-  {
-    res.json({ error: "Fail to Retrieve User Info" });
+    )(req, res, next);
   }
+);
 
-  res.json({
-    username: userInfo.username,
-    email: userInfo.email,
-  })
+// router.get("/getuserinfo/:id", checkedIfLoggedIn, async (req, res) => {
+  
+//   const userInfo = await Users.findByPk(req.user.id);        
+
+//   if(!userInfo)
+//   {
+//     res.json({ error: "Fail to Retrieve User Info" });
+//   }
+
+//   res.json({
+//     username: userInfo.username,
+//     email: userInfo.email,
+//   })
       
-});
+// });
 
 router.get("/getsecqn/:emailRequested", async (req, res) => {
   

@@ -1,3 +1,5 @@
+import { sessionStore } from '../stores/session.store';
+
 export interface SecurityQuestion {
     id: number,
     question: string
@@ -41,7 +43,28 @@ export class LoginService {
                 "Content-Type": 'application/json'
             }
         })
+        if (res.ok)
+            return await res.json()
+        else
+            throw Error((await res.json()).error)
+    }
 
+    async login(formData: {email: string, password: string}) {
+        const {...data} = formData
+
+        let res = await fetch(`${this.URL}users/login`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": 'application/json'
+            }
+        })
+
+        if(res.ok) {
+            let token: string = (await res.json())['token']
+            sessionStore.update(state => ({token: token}))
+        } else
+            throw Error((await res.json()).error)
 
     }
     

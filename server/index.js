@@ -2,10 +2,12 @@
 const express = require('express');
 const app = express();
 const cors = require("cors");
+const passport = require('passport')
 
 // Init cors and express json
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
 // Init database
 const db = require("./models");
