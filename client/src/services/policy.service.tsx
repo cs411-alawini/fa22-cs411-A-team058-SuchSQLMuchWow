@@ -21,11 +21,15 @@ export class PolicyService {
         })
     }
 
-    async getAllPolicies() {
-        console.log(sessionQuery.token)
+    async getAllPolicies(searchString) {
+        const data = {
+            searchString,
+        }
         let res = await fetch(`${this.URL}insurance/getAllPolicies`, {
-            method: 'GET',
+            method: 'POST',
+            body: JSON.stringify(data),
             headers: {
+                "Content-Type": 'application/json',
                 "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
             }
         })
