@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import { PolicyService } from '../../services/policy.service';
 import './ViewInsurance.css';
 
 const ViewInsurance = () => {
     const [policyList, updatePolicyList] = useState([])
+    const [searchText, updateSearchText] = useState('')
     const policyServer = new PolicyService()
+
+    const handleOnChange = (event) => {
+        console.log('dccd')
+        updateSearchText(event.target.value)
+    }
 
     const fetchAllPolicies = async () => {
         const response = await policyServer.getAllPolicies()
@@ -45,6 +52,9 @@ const ViewInsurance = () => {
     return(
         <div className="InsuranceView">
             <Typography variant='h3'>Insurances</Typography>
+            <div className="searchContainer">
+                <TextField  id="outlined-basic" label="Search Insurances" variant="outlined" className="searchBox" value={searchText} onChange={handleOnChange}/>
+            </div>
             <div className="insuranceList">
                 {displayAllPolicies()}
             </div>
