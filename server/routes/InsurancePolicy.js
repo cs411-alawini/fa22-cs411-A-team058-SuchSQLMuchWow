@@ -1,7 +1,7 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
 const passport = require('passport')
-const { InsurancePolicy , Employ, Company} = require("../models"); // import  model
+const { InsurancePolicy , Employ, Company,  PolicyType} = require("../models"); // import  model
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 var Sequelize = require("sequelize");
 const Employs = require("../models/Employs");
@@ -52,7 +52,7 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
             res.status(200).send('Policy created successfully')
     
         } else {
-            res.status(400).send({error: "Unauthorized access"})
+            res.status(401).send({error: "Unauthorized access"})
         }
     } catch(e) {
         console.log(e)
@@ -62,22 +62,50 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
 
 })
 
+router.get('/getPolicy/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const policyId = req.params.id
+
+    var policies = await InsurancePolicy.findAll({where: {isActive: true, id: policyId},include: [Company, PolicyType], raw: true});
+    let filteredPolicies = policies.map(val => {
+        return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
+    })
+    res.json({data: filteredPolicies});
+
+})
+
 router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
     // const policyList = await InsurancePolicy.findAll();
     const {searchString} = req.body
 
     if(searchString.length === 0) {
-        var policies = await InsurancePolicy.findAll({include: Company, raw: true});
+        var policies = await InsurancePolicy.findAll({where: {isActive: true},include: [Company, PolicyType], raw: true});
     } else {
-        var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}}, include: Company, raw: true})
+        var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true}, include: [Company, PolicyType], raw: true})
     }
 
     let filteredPolicies = policies.map(val => {
-        return {id: val.id, type: val.type, name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
+        return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
     })
     res.json({data: filteredPolicies});
 
 });
+
+router.delete('/deletePolicy/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+
+    let policyId = req.params.id
+
+    let company_id = (await Employ.findOne({where: {user_id: req.user.id}, attributes: ['company_id']})).company_id
+
+    let policy = await InsurancePolicy.findOne({where: {id: policyId}})
+
+    if(policy.company_id === company_id) {
+        await InsurancePolicy.update({isActive: false}, {where: {id: policyId}})
+        res.status(200).send('Policy deleted successfully')
+    } else {
+        res.status(401).send({error: 'Unauthorized access'})
+    }
+
+})
 
 module.exports = router;
 
