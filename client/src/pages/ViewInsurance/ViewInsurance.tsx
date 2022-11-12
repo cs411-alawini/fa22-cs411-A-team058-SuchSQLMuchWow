@@ -16,14 +16,25 @@ const ViewInsurance = () => {
 
         if (policyList.length<=0) return <Typography variant="h5">No Policies Available</Typography>
         else {
-            return policyList.map(({ name, cover_amt, premium_per_annum, premium_per_month, isActive, company_id }) => (
-                <div className="insuranceContainer">
-                    <div className="insuranceHeader">
-                        <Typography>{name}</Typography>
-                        <Typography>{company_id}</Typography>
+            return policyList.map(({ name, cover_amt, premium_per_annum, premium_per_month, isActive, Company }, index) => {
+                let companyObject: any
+                companyObject = Company
+                return (
+                    <div className="insuranceContainer" key={index}>
+                        <div className="insuranceHeader">
+                            <Typography variant="h5">{name}</Typography>
+                            <Typography>{companyObject.name}</Typography>
+                        </div>
+                        <Typography>Premium Per Annum: {premium_per_annum}</Typography>
+                        <Typography>Premium Per Month: {premium_per_month}</Typography>
+                        <Typography>Cover Amount: {cover_amt}</Typography>
+                        <div className="activeContainer">
+                            <Typography>Status: </Typography>
+                            {isActive ? <div className="green dot"></div> : <div className="red dot"></div>}
+                        </div>
                     </div>
-                </div>
-            ))
+                )
+            })
         }
     }
 
