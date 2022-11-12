@@ -18,9 +18,13 @@ router.get("/getSecurityQuestions", async (req, res) => {
 });
 
 router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: false }), async (req,res) => {
-  const [result, metadata] = await db.sequelize.query('SELECT ip.id, ip.name, ip.premium_per_annum, COUNT(*) FROM Rating ra JOIN InsurancePolicy ip ON ra.policy_id = ip.id WHERE ra.rating = (Select MAX(rating) FROM Rating) GROUP BY ra.policy_id ORDER BY COUNT(*) DESC LIMIT 15')
+  const [result, metadata] = await db.sequelize.query('SELECT ip.id, ip.name, COUNT(*) FROM Rating ra JOIN InsurancePolicy ip ON ra.policy_id = ip.id WHERE ra.rating = (Select MAX(rating) FROM Rating) GROUP BY ra.policy_id ORDER BY COUNT(*) DESC LIMIT 15')
 
-  res.send({data: result})
+  let modifiedResults = results.map(val => {
+    return {name: val.name, id: val.id, count: val['COUNT(*)']}
+  })
+
+  res.send({data: modifiedResults})
 })
 
 router.get('/dashboard/usersInCoverAmountRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
