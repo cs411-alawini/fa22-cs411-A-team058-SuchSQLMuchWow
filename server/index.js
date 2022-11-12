@@ -53,8 +53,8 @@ const routeUsers = require("./routes/Users");
 app.use("/users", routeUsers);
 const routeInsPolicy = require("./routes/InsurancePolicy");
 app.use("/insurance", routeInsPolicy);
-// const dashboardRouter = require("./routes/API")
-// app.use('/api/dashboard', dashboardRouter)
+const userActivityRouter = require("./routes/UserActivity")
+app.use('/userActivity', userActivityRouter)
 const routeAPI = require("./routes/API")
 app.use('/api', routeAPI)
 
