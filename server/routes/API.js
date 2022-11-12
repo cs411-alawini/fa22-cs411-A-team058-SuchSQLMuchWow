@@ -25,7 +25,7 @@ router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: fals
 
 router.get('/dashboard/usersInCoverAmountRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
-  const [result, metadata] = await db.sequelize.query('SELECT u.email, u.state, u.first_name FROM InsuranceHub.UserActivity ua JOIN InsuranceHub.User u ON (ua.user_id = u.id) JOIN (SELECT id FROM InsuranceHub.InsurancePolicy WHERE cover_amount < 1000) AS temp ON (ua.policy_id = temp.id)')
+  const [result, metadata] = await db.sequelize.query('SELECT DISTINCT u.email, u.state, u.first_name FROM UserActivity ua JOIN User u ON (ua.user_id = u.id) JOIN (SELECT id FROM InsurancePolicy WHERE cover_amt < 1000) AS temp ON (ua.policy_id = temp.id)')
 
   res.send({data: result})
 
