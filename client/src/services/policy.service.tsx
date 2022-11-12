@@ -57,4 +57,28 @@ export class PolicyService {
         return res
     }
 
+    async getPolicyById(id) {
+        let res = await fetch(`${this.URL}insurance/getPolicy/${id}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": 'application/json',
+                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+        })
+        const body = res.json()
+        return body
+    }
+
+    async updatePolicyById(policyData) {
+        let res = await fetch(`${this.URL}insurance/updatePolicy`, {
+            method: 'PUT',
+            body: JSON.stringify(policyData),
+            headers: {
+                "Content-Type": 'application/json',
+                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+        })
+        return res
+    }
+
 }

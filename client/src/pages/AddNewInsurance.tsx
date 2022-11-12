@@ -9,11 +9,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button'
-import { ValidationGroup, Validate, AutoDisabler } from 'mui-validate';
+import { ValidationGroup, Validate } from 'mui-validate';
 import { PolicyService } from '../services/policy.service';
 
 
-export class AddNewInsurance extends React.Component {
+export class AddNewInsurance extends React.Component<any, any> {
 
     policyService = new PolicyService()
 
@@ -24,6 +24,29 @@ export class AddNewInsurance extends React.Component {
         this.onSubmit = this.onSubmit.bind(this)
     }
 
+    async componentDidMount() {
+        if (this.props.id) {
+            const policyService = new PolicyService()
+            const response = await policyService.getPolicyById(this.props.id)
+            const policyData = response.data[0]
+            const policyTypeMap = {
+                "Auto": 1,
+                "Home": 2,
+                "Medical": 3,
+            }
+            this.setState(oldState => ({
+                values: {
+                    ...oldState['values'],
+                    name: policyData.name,
+                    policyType: policyTypeMap[policyData.type],
+                    coverAmt: policyData.cover_amt,
+                    premiumPM: policyData.premium_per_month,
+                    premiumPA: policyData.premium_per_annum,
+                },
+                editablePolicyData: policyData
+            }))
+        }
+    }
 
     onChangeHandler(event) {
         const fieldName = event.target.name
@@ -37,12 +60,29 @@ export class AddNewInsurance extends React.Component {
     }
 
     async onSubmit(event) {
-        try {
-            await this.policyService.addPolicy(this.state['values'])
-            this.setState({values:{'policyType': '1'}})
-            alert('Policy created successfully')
-        } catch(e: any) {
-            alert(e.message)
+        if (this.props.id) {
+            const values = this.state.values
+            const newPolicyObject = {
+                ...this.state.editablePolicyData,
+                name: values.name,
+                cover_amt: values.coverAmt,
+                premium_per_month: values.premiumPM,
+                premium_per_annum: values.premiumPA,
+            }
+            const res = await this.policyService.updatePolicyById(newPolicyObject)
+            if(res.ok) {
+                alert("Policy Updated Successfully")
+                this.props.navigate("/insurancelist")
+            }
+        }
+        else {
+            try {
+                await this.policyService.addPolicy(this.state['values'])
+                this.setState({values: {'policyType': '1'}})
+                alert('Policy created successfully')
+            } catch (e: any) {
+                alert(e.message)
+            }
         }
     }
 
@@ -63,7 +103,9 @@ export class AddNewInsurance extends React.Component {
 
                             <Grid xs={12} md={6}>
                                 <Validate name="name" required={[true, 'This field is required']} regex={[/^[a-z0-9A-Z ]+$/, 'The value should be alphanumeric']}>
-                                    <TextField fullWidth id="name" label="Policy Name" name="name" variant="outlined" onChange={this.onChangeHandler}/>
+                                    <TextField InputLabelProps={{
+                                        shrink: true,
+                                    }} value={this.state['values'].name} fullWidth id="name" label="Policy Name" name="name" variant="outlined" onChange={this.onChangeHandler}/>
                                 </Validate>
                             </Grid>
 
@@ -71,6 +113,7 @@ export class AddNewInsurance extends React.Component {
                                 <FormControl fullWidth>
                                     <InputLabel id="policyType">Policy Type</InputLabel>
                                     <Select
+                                        disabled={!!this.props.id}
                                         labelId="policyType"
                                         id="demo-simple-select"
                                         name="policyType"
@@ -88,26 +131,39 @@ export class AddNewInsurance extends React.Component {
 
                             <Grid xs={12} md={6}>
                                 <Validate name="coverAmt" required={[true, 'This field is required']}>
-                                    <TextField fullWidth id="coverAmt" type="number" label="Cover Amount ($)" name="coverAmt" variant="outlined" onChange={this.onChangeHandler}/>
+                                    <TextField
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={this.state['values'].coverAmt}
+                                        fullWidth id="coverAmt" type="number" label="Cover Amount ($)" name="coverAmt" variant="outlined" onChange={this.onChangeHandler}/>
                                 </Validate>
                             </Grid>
 
                             <Grid xs={12} md={6}>
                                 <Validate name="premiumPA" required={[true, 'This field is required']}>  
-                                    <TextField fullWidth id="premiumPM" type="number" label="Premium Per Month ($)" name="premiumPM" variant="outlined" onChange={this.onChangeHandler}/>
+                                    <TextField
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={this.state['values'].premiumPM}
+                                        fullWidth id="premiumPM" type="number" label="Premium Per Month ($)" name="premiumPM" variant="outlined" onChange={this.onChangeHandler}/>
                                 </Validate>
                             </Grid>
 
                             <Grid xs={12} md={6}>
                                 <Validate name="premiumPM" required={[true, 'This field is required']}>
-                                    <TextField fullWidth id="premiumPA" type="number" label="Premium Per Annum ($)" name="premiumPA" variant="outlined" onChange={this.onChangeHandler}/>
+                                    <TextField
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={this.state['values'].premiumPA}
+                                        fullWidth id="premiumPA" type="number" label="Premium Per Annum ($)" name="premiumPA" variant="outlined" onChange={this.onChangeHandler}/>
                                 </Validate>
                             </Grid>
 
                             <Grid xs={12}>
-                                <AutoDisabler>
-                                    <Button variant="contained" onClick={this.onSubmit}> Submit </Button>
-                                </AutoDisabler>
+                                <Button variant="contained" onClick={this.onSubmit}> Submit </Button>
                             </Grid>
                         </Grid>
                     </ValidationGroup>

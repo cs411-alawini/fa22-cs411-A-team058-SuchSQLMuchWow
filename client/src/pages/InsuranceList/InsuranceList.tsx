@@ -5,9 +5,9 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import _ from 'lodash';
 import { PolicyService } from '../../services/policy.service';
-import './ViewInsurance.css';
+import './InsuranceList.css';
 
-const ViewInsurance = () => {
+const InsuranceList = () => {
     const [policyList, updatePolicyList] = useState([])
     const [searchText, updateSearchText] = useState('')
     const [deleteId, setDeleteId] = useState('')
@@ -109,4 +109,4 @@ const ViewInsurance = () => {
     )
 }
 
-export default ViewInsurance;
+export default InsuranceList;

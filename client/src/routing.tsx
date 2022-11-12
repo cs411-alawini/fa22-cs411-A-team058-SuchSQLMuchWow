@@ -3,7 +3,7 @@ import {createBrowserRouter} from 'react-router-dom'
 import { AddNewInsurance } from './pages/AddNewInsurance';
 import { RegisterUser } from './pages/Register'
 import { Login } from './pages/Login'
-import ViewInsurance from "./pages/ViewInsurance";
+import InsuranceList from "./pages/InsuranceList";
 import EditInsurance from "./pages/EditInsurance";
 
 export const router = createBrowserRouter([
@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
         },
         {
           path: '/insurancelist',
-          element: <ViewInsurance />
+          element: <InsuranceList />
         },
         {
           path: '/editInsurance/:id',

@@ -1,13 +1,17 @@
 import React from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import {AddNewInsurance} from "../AddNewInsurance";
+
+type PropType = {
+    id: string
+}
 
 const EditInsurance = () => {
 
     let { id } = useParams();
-
-    return(<div>
-        {id}
-    </div>)
+    const navigate = useNavigate();
+    const urlParams = { id }
+    return <AddNewInsurance {...urlParams} navigate={navigate} />
 }
 
 export default EditInsurance
