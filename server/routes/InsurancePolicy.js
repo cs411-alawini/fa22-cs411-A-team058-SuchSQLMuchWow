@@ -28,7 +28,7 @@ router.get("/getPoliciesCompany", passport.authenticate('jwt', { session: false 
 
 
 
-router.get('/addPolicy', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.post('/addPolicy', passport.authenticate('jwt', { session: false }), async (req, res) => {
 
     try {
         let data = await Employ.findOne({

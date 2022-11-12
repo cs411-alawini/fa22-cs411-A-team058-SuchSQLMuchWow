@@ -1,5 +1,5 @@
 
-class PolicyService {
+export class PolicyService {
     URL = 'http://localhost:5000/'
 
     async addPolicy(formData) {
@@ -19,7 +19,7 @@ class PolicyService {
             }
         })
 
-        
+
 
 
     }
