@@ -45,4 +45,16 @@ export class PolicyService {
         return body
     }
 
+    async deletePolicy(id) {
+        let res = await fetch(`${this.URL}insurance/deletePolicy/${id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": 'application/json',
+                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+        })
+
+        return res
+    }
+
 }
