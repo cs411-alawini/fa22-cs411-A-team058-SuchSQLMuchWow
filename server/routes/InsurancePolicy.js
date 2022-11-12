@@ -58,7 +58,6 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
         console.log(e)
         res.status(500).send({error: 'Internal Server Exception'})
     }
-    
 
 })
 
@@ -89,6 +88,22 @@ router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),
     res.json({data: filteredPolicies});
 
 });
+
+router.put('/updatePolicy', passport.authenticate('jwt', { session: false }), async (req, res) => {
+
+    try {
+        const {id, name, coverAmt, premiumPA, premiumPM} = req.body
+
+        await InsurancePolicy.update({name, cover_amt: coverAmt, premium_per_annum: premiumPA, premium_per_month: premiumPM}, {where: {id}});
+
+        res.status(200).send("Policy updated successfully")
+
+    } catch(e) {
+        console.log(e)
+        res.status(500).send({error: "Internal Server Error"})
+    }
+
+})
 
 router.delete('/deletePolicy/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {

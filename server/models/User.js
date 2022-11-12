@@ -76,6 +76,7 @@ module.exports = (sequelize, DataTypes) => {
       Users.belongsTo(models.SecurityQuestion, {foreignKey: 'security_question'})
       Users.belongsTo(models.Role, {foreignKey: 'user_type'})
       Users.belongsTo(models.Employ, {foreignKey: 'user_id'})
+      Users.belongsTo(models.Rating, {foreignKey: 'user_id'})
     }
 
       return Users;
