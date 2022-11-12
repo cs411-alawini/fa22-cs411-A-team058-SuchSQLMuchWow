@@ -35,6 +35,7 @@
     padding: 10px;
     border: grey 2px solid;
     border-radius: 5px;
+    position: relative;
 }
 
 .insuranceHeader {
@@ -62,4 +63,57 @@
 
 .red {
     background-color: red;
+}
+
+.actionContainer{
+    position: absolute;
+    display: flex;
+    bottom: 10px;
+    right: 10px;
+}
+
+.actionContainer > button:hover{
+    transform: scale(120%);
+}
+
+.actionContainer > button {
+    transition: all 0.2s;
+}
+
+.actionContainer > button > img {
+    width: 25px;
+}
+
+.editBtn{
+    margin-right: 20px;
+}
+
+.deletePopup{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.67);
+}
+
+.popupContainer {
+    height: 30%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.popupContainer > div {
+    margin-top: 20px;
+}
+
+.popupContainer > div > button:nth-child(1) {
+    margin-right: 20px;
 }
