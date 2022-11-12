@@ -61,8 +61,9 @@ export class LoginService {
         })
 
         if(res.ok) {
-            let token: string = (await res.json())['token']
-            sessionStore.update(state => ({token: token}))
+            let {token, role} = (await res.json())
+            console.log(token)
+            sessionStore.update(state => ({token, role}))
         } else
             throw Error((await res.json()).error)
 

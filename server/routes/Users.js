@@ -162,9 +162,9 @@ router.post('/login', async (req, res, next) => {
               if (error) return next(error);
 
               const body = { id: user.id, email: user.email, role: user.user_type };
-              const token = jwt.sign({ user: body }, 'TOP_SECRET');
+              const token = jwt.sign({ user: body }, 'SECRET_PASSWORD567463', {expiresIn: '1 days'});
 
-              return res.json({ token });
+              return res.json({ token, role: user.user_type});
             }
           );
         } catch (error) {
