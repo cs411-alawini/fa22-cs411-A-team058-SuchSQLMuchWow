@@ -25,7 +25,7 @@ const ViewInsurance = () => {
 
         if (policyList.length<=0) return <Typography variant="h5">No Policies Available</Typography>
         else {
-            return policyList.map(({ name, cover_amt, premium_per_annum, premium_per_month, isActive, Company }, index) => {
+            return policyList.map(({ name, cover_amt, premium_per_annum, premium_per_month, isActive, Company, type }, index) => {
                 let companyObject: any
                 companyObject = Company
                 return (
@@ -34,6 +34,7 @@ const ViewInsurance = () => {
                             <Typography variant="h5">{name}</Typography>
                             <Typography>{companyObject.name}</Typography>
                         </div>
+                        <Typography>Policy Type: {type}</Typography>
                         <Typography>Premium Per Annum: {premium_per_annum}</Typography>
                         <Typography>Premium Per Month: {premium_per_month}</Typography>
                         <Typography>Cover Amount: {cover_amt}</Typography>

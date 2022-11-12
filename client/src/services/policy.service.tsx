@@ -16,9 +16,16 @@ export class PolicyService {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
-                "Content-Type": 'application/json'
+                "Content-Type": 'application/json',
+                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
             }
         })
+
+        if(res.ok) {
+            return
+        } else {
+            throw Error('Error in creating policy')
+        }
     }
 
     async getAllPolicies(searchString) {

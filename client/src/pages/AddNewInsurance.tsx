@@ -10,9 +10,12 @@ import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button'
 import { ValidationGroup, Validate, AutoDisabler } from 'mui-validate';
+import { PolicyService } from '../services/policy.service';
 
 
 export class AddNewInsurance extends React.Component {
+
+    policyService = new PolicyService()
 
     constructor(props: {}) {
         super(props)
@@ -34,8 +37,13 @@ export class AddNewInsurance extends React.Component {
     }
 
     async onSubmit(event) {
-        console.log(this.state)
-        alert("sending command")
+        try {
+            await this.policyService.addPolicy(this.state['values'])
+            this.setState({values:{'policyType': '1'}})
+            alert('Policy created successfully')
+        } catch(e: any) {
+            alert(e.message)
+        }
     }
 
 

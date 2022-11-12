@@ -91,18 +91,22 @@ router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),
 });
 
 router.delete('/deletePolicy/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-
-    let policyId = req.params.id
-
-    let company_id = (await Employ.findOne({where: {user_id: req.user.id}, attributes: ['company_id']})).company_id
-
-    let policy = await InsurancePolicy.findOne({where: {id: policyId}})
-
-    if(policy.company_id === company_id) {
-        await InsurancePolicy.update({isActive: false}, {where: {id: policyId}})
-        res.status(200).send('Policy deleted successfully')
-    } else {
-        res.status(401).send({error: 'Unauthorized access'})
+    try {
+        let policyId = req.params.id
+    
+        let company_id = (await Employ.findOne({where: {user_id: req.user.id}, attributes: ['company_id']})).company_id
+    
+        let policy = await InsurancePolicy.findOne({where: {id: policyId}})
+    
+        if(policy.company_id === company_id) {
+            await InsurancePolicy.update({isActive: false}, {where: {id: policyId}})
+            res.status(200).send('Policy deleted successfully')
+        } else {
+            res.status(401).send({error: 'Unauthorized access'})
+        }
+    } catch (e) {
+        console.log(e)
+        res.status(500).send({error: "Internal Server Error"})
     }
 
 })
