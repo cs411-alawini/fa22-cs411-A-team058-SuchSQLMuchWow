@@ -1,7 +1,7 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
 const passport = require('passport')
-const { InsurancePolicy , Employ} = require("../models"); // import  model
+const { InsurancePolicy , Employ, Company} = require("../models"); // import  model
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 var Sequelize = require("sequelize");
 const Employs = require("../models/Employs");
@@ -64,8 +64,11 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
 router.get("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
     // const policyList = await InsurancePolicy.findAll();
 
-    let policies = await InsurancePolicy.findAll({});
-    res.json({data: policies});
+    let policies = await InsurancePolicy.findAll({include: Company, raw: true});
+    let filteredPolicies = policies.map(val => {
+        return {id: val.id, type: val.type, name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
+    })
+    res.json({data: filteredPolicies});
 
 });
 

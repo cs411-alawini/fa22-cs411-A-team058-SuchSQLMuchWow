@@ -65,7 +65,7 @@ app.use('/api', routeAPI)
 // const routePurchasePolicy = require("./routes/PurchasePolicy");
 // app.use("/purchasepolicy", routePurchasePolicy);
 
-const port = process.env.PORT || 8888;
+const port = process.env.PORT || 5000;
 
 db.sequelize.sync({alter: true}).then(()=>{
     app.listen(port, () => {
