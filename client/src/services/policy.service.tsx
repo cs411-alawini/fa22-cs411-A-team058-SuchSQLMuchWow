@@ -26,7 +26,7 @@ export class PolicyService {
         let res = await fetch(`${this.URL}insurance/getAllPolicies`, {
             method: 'GET',
             headers: {
-                "Authorization": `Bearer ${sessionQuery.token}`
+                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
             }
         })
         let body = res.json()
