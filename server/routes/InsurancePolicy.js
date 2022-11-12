@@ -6,6 +6,7 @@ const { InsurancePolicy , Employ, Company} = require("../models"); // import  mo
 var Sequelize = require("sequelize");
 const Employs = require("../models/Employs");
 const User = require("../models/User");
+const { Op } = require("sequelize");
 
 router.get("/getPoliciesCompany", passport.authenticate('jwt', { session: false }),  async (req, res) => {
     // const policyList = await InsurancePolicy.findAll();
@@ -61,10 +62,16 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
 
 })
 
-router.get("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
+router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
     // const policyList = await InsurancePolicy.findAll();
+    const {searchString} = req.body
 
-    let policies = await InsurancePolicy.findAll({include: Company, raw: true});
+    if(searchString.length === 0) {
+        var policies = await InsurancePolicy.findAll({include: Company, raw: true});
+    } else {
+        var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}}, include: Company, raw: true})
+    }
+
     let filteredPolicies = policies.map(val => {
         return {id: val.id, type: val.type, name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
     })

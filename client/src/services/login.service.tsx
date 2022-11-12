@@ -51,6 +51,7 @@ export class LoginService {
             console.log(token)
             sessionStore.update(state => ({token, role}))
             localStorage.setItem('jwtToken', token)
+            localStorage.setItem('role', role)
         } else
             throw Error((await res.json()).error)
 
