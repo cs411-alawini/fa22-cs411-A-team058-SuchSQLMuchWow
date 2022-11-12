@@ -5,20 +5,6 @@ export interface SecurityQuestion {
     question: string
 }
 
-// interface RegisterUser {
-//     city: string,
-//     country: string,
-//     email: string,
-//     firstname: string,
-//     lastname: string,
-//     password: string,
-//     middlename: string,
-//     securityAns: string,
-//     securityQuestion: number,
-//     state: string,
-//     zip: string
-// }
-
 export class LoginService {
     URL = 'http://localhost:5000/'
 
