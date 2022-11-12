@@ -2,6 +2,7 @@ const express = require("express");     // import express
 const router = express.Router();        // import express router 
 const { SecurityQuestion } = require("../models"); // import  model
 const db = require('../models')
+const passport = require('passport')
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 // const dashboardRouter = require('./Dashboard')
 
@@ -16,10 +17,18 @@ router.get("/getSecurityQuestions", async (req, res) => {
 
 });
 
-router.get('/dashboard/maxRatings', async (req,res) => {
+router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: false }), async (req,res) => {
   const [result, metadata] = await db.sequelize.query('SELECT ip.id, ip.name, ip.premium_per_annum, COUNT(*) FROM Rating ra JOIN InsurancePolicy ip ON ra.policy_id = ip.id WHERE ra.rating = (Select MAX(rating) FROM Rating) GROUP BY ra.policy_id ORDER BY COUNT(*) DESC LIMIT 15')
 
-  console.log(result)
+  res.send({data: result})
+})
+
+router.get('/dashboard/usersInCoverAmountRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
+
+  const [result, metadata] = await db.sequelize.query('SELECT u.email, u.state, u.first_name FROM InsuranceHub.UserActivity ua JOIN InsuranceHub.User u ON (ua.user_id = u.id) JOIN (SELECT id FROM InsuranceHub.InsurancePolicy WHERE cover_amount < 1000) AS temp ON (ua.policy_id = temp.id)')
+
+  res.send({data: result})
+
 })
 
 

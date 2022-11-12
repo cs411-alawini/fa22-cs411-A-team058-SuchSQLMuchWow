@@ -13,7 +13,7 @@ router.post('/addUserActivity', passport.authenticate('jwt', { session: false })
     
         await UserActivity.create({
             user_id: userId,
-            policy_id, policyId,
+            policy_id: policyId,
             search_string: searchString
         })
     
