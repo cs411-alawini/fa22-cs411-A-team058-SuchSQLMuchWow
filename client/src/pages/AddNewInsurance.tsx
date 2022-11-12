@@ -34,7 +34,7 @@ export class AddNewInsurance extends React.Component {
     }
 
     async onSubmit(event) {
-
+        console.log(this.state)
         alert("sending command")
     }
 
@@ -54,7 +54,7 @@ export class AddNewInsurance extends React.Component {
                         <Grid container spacing={2}>
 
                             <Grid xs={12} md={6}>
-                                <Validate name="name" required={[true, 'This field is required']} regex={[/^[a-z0-9A-Z]+$/, 'The value should be alphanumeric']}>
+                                <Validate name="name" required={[true, 'This field is required']} regex={[/^[a-z0-9A-Z ]+$/, 'The value should be alphanumeric']}>
                                     <TextField fullWidth id="name" label="Policy Name" name="name" variant="outlined" onChange={this.onChangeHandler}/>
                                 </Validate>
                             </Grid>
