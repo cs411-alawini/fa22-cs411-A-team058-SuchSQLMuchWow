@@ -61,6 +61,13 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
 
 })
 
- 
+router.get("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
+    // const policyList = await InsurancePolicy.findAll();
+
+    let policies = await InsurancePolicy.findAll({});
+    res.json({data: policies});
+
+});
+
 module.exports = router;
 
