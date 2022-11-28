@@ -74,18 +74,21 @@ router.get('/getPolicy/:id', passport.authenticate('jwt', { session: false }), a
 
 router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
     // const policyList = await InsurancePolicy.findAll();
-    const {searchString} = req.body
+    const {searchString, page, pageCount} = req.body
 
     if(searchString.length === 0) {
-        var policies = await InsurancePolicy.findAll({where: {isActive: true},include: [Company, PolicyType], raw: true});
+
+        var count = await InsurancePolicy.count({where: {isActive: true}})
+        var policies = await InsurancePolicy.findAll({where: {isActive: true},include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount});
     } else {
-        var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true}, include: [Company, PolicyType], raw: true})
+        var count = await InsurancePolicy.count({where: {name: {[Op.substring]: searchString}, isActive: true}})
+        var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true}, include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount})
     }
 
     let filteredPolicies = policies.map(val => {
         return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
     })
-    res.json({data: filteredPolicies});
+    res.json({data: filteredPolicies, count});
 
 });
 

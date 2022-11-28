@@ -28,9 +28,11 @@ export class PolicyService {
         }
     }
 
-    async getAllPolicies(searchString) {
+    async getAllPolicies(searchString, page, pageCount) {
         const data = {
             searchString,
+            page,
+            pageCount
         }
         let res = await fetch(`${this.URL}insurance/getAllPolicies`, {
             method: 'POST',

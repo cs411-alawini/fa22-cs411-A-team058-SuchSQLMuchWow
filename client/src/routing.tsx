@@ -7,6 +7,7 @@ import AuthenticationHOC from "./hocs/AuthenticationHOC";
 import InsuranceList from "./pages/InsuranceList";
 import EditInsurance from "./pages/EditInsurance";
 import Dashboard from "./pages/Dashboard";
+import ViewInsurance from './pages/ViewInsurance'
 
 export const router = createBrowserRouter([
     {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
         {
           path: '/insurancelist',
           element: AuthenticationHOC(InsuranceList)
+        },
+        {
+          path: '/viewInsurance/:id',
+          element: AuthenticationHOC(ViewInsurance)
         },
         {
           path: '/editInsurance/:id',

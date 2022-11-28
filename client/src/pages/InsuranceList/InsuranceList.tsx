@@ -6,6 +6,11 @@ import Button from "@mui/material/Button";
 import _ from 'lodash';
 import { PolicyService } from '../../services/policy.service';
 import {UserActivityService} from "../../services/userActivity.service";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import { CardActionArea } from '@mui/material';
+import { Link } from 'react-router-dom'
+import Pagination from '@mui/material/Pagination';
 import './InsuranceList.css';
 
 const InsuranceList = () => {
@@ -17,15 +22,21 @@ const InsuranceList = () => {
     const policyService = new PolicyService()
     const userActivityService = new UserActivityService()
 
+    let page = 1
+    const [totalCount, setTotalCount] = useState(0)
+    const pageCount = 20
+
     const delayedAPIFetch = useCallback(_.debounce((query) => fetchAllPolicies(query), 500), []);
     const handleOnChange = (event) => {
+        page = 1
         updateSearchText(event.target.value)
         delayedAPIFetch(event.target.value)
     }
 
     const fetchAllPolicies = async (query) => {
-        const response = await policyService.getAllPolicies(query)
+        const response = await policyService.getAllPolicies(query, page, pageCount)
         updatePolicyList(response.data)
+        setTotalCount(Math.ceil(response.count/pageCount))
     }
 
     const handleOnEditInsuranceClick = (id) => {
@@ -48,6 +59,11 @@ const InsuranceList = () => {
         setPopupVisibility(false)
     }
 
+    const handlePageChange = (event, value) => {
+        page = value
+        fetchAllPolicies(searchText).catch(console.error)
+    }
+
     const trackInsuranceClick = (policyId) => {
         userActivityService.reportUserActivity(searchText, policyId).catch(console.error)
     }
@@ -60,24 +76,54 @@ const InsuranceList = () => {
                 let companyObject: any
                 companyObject = Company
                 return (
-                    <div className="insuranceContainer" key={id} onClick={() => trackInsuranceClick(id)}>
-                        <div className="insuranceHeader">
-                            <Typography variant="h5">{name}</Typography>
-                            <Typography>{companyObject.name}</Typography>
-                        </div>
-                        <Typography>Policy Type: {type}</Typography>
-                        <Typography>Premium Per Annum: {premium_per_annum}</Typography>
-                        <Typography>Premium Per Month: {premium_per_month}</Typography>
-                        <Typography>Cover Amount: {cover_amt}</Typography>
-                        <div className="activeContainer">
-                            <Typography>Status: </Typography>
-                            {isActive ? <div className="green dot"></div> : <div className="red dot"></div>}
-                        </div>
-                        <div className="actionContainer">
-                            <button onClick={() => handleOnEditInsuranceClick(id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>
-                            <button onClick={() => handleOnDeleteInsuranceClick(id)}><img src="./delete.png" alt="Edit Button" /></button>
-                        </div>
-                    </div>
+
+                    <Card sx= {{marginTop: "50px", width: "90%"}} key={id}>
+                        <CardActionArea component={Link} to={`/viewInsurance/${id}`}>
+                            <CardContent>
+                            <div className="insuranceContainer" onClick={() => trackInsuranceClick(id)}>
+                                <div className="insuranceHeader">
+                                    <Typography variant="h5">{name}</Typography>
+                                    <Typography>{companyObject.name}</Typography>
+                                </div>
+                                <hr />
+                                <div className="featureContainer">
+                                    <div className="subContainer">
+                                        <div className="header"><Typography sx={{fontWeight: 'bold'}}>Policy Type</Typography></div>
+                                        <div className="data">{type}</div>
+                                    </div>
+
+                                    <div className="subContainer">
+                                        <div className="header"><Typography sx={{fontWeight: 'bold'}}>Premium Per Annum</Typography></div>
+                                        <div className="data">{premium_per_annum}</div>
+                                    </div>
+
+                                    <div className="subContainer">
+                                        <div className="header"><Typography sx={{fontWeight: 'bold'}}>Premium Per Month</Typography></div>
+                                        <div className="data">{premium_per_month}</div>
+                                    </div>
+
+                                    <div className="subContainer">
+                                        <div className="header"><Typography sx={{fontWeight: 'bold'}}>Cover Amount</Typography></div>
+                                        <div className="data">{cover_amt}</div>
+                                    </div>
+                                </div>
+                                {/* <div className="activeContainer">
+                                    <Typography>Status: </Typography>
+                                    {isActive ? <div className="green dot"></div> : <div className="red dot"></div>}
+                                </div> */}
+                                <br /> <br></br> <br></br>
+                                <div className="actionContainer">
+                                    <button onClick={() => handleOnEditInsuranceClick(id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>
+                                    <button onClick={() => handleOnDeleteInsuranceClick(id)}><img src="./delete.png" alt="Edit Button" /></button>
+                                </div>
+                            </div>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+
+
+
+                    
                 )
             })
         }
@@ -96,6 +142,11 @@ const InsuranceList = () => {
             <div className="insuranceList">
                 {displayAllPolicies()}
             </div>
+
+            <Pagination sx={{marginTop: "30px"}} count={totalCount} showFirstButton showLastButton onChange={handlePageChange} />
+
+
+
             {
                 isPopupVisible ? <div className="deletePopup">
                     <div className="popupContainer">
