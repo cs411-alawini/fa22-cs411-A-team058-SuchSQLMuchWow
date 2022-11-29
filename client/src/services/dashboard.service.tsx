@@ -1,3 +1,5 @@
+import {LoginService} from './login.service'
+
 export class DashboardService {
     URL = 'http://localhost:8888/api/dashboard/'
 
@@ -6,7 +8,7 @@ export class DashboardService {
             method: 'GET',
             referrerPolicy: 'no-referrer',
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`,
+                "Authorization": `Bearer ${LoginService.getToken()}`,
             }
         })
 
@@ -19,7 +21,7 @@ export class DashboardService {
             method: 'GET',
             referrerPolicy: 'no-referrer',
             headers: {
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`,
+                "Authorization": `Bearer ${LoginService.getToken()}`,
             }
         })
 

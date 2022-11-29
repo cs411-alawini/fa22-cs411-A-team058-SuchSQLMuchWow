@@ -50,6 +50,7 @@ export class RegisterUser extends React.Component {
             console.log(res)
             alert('User created successfully')
             this.setState({registrationStatus: true})
+            
         } catch(e: any) {
             // console.log(e)
             alert(e.message)

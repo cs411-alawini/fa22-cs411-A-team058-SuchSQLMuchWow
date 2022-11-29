@@ -11,7 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button'
 import { ValidationGroup, Validate } from 'mui-validate';
 import { PolicyService } from '../services/policy.service';
-
+import {Header} from '../components/Header/Header'
+import Autocomplete from '@mui/material/Autocomplete';
 
 export class AddNewInsurance extends React.Component<any, any> {
 
@@ -19,12 +20,15 @@ export class AddNewInsurance extends React.Component<any, any> {
 
     constructor(props: {}) {
         super(props)
-        this.state = {values:{'policyType': '1'}}
+        this.state = {values:{'policyType': '1'}, tags: []}
         this.onChangeHandler = this.onChangeHandler.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
     }
 
     async componentDidMount() {
+        let tags = (await this.policyService.getTags()).tags
+        this.setState({tags: [...tags]})
+
         if (this.props.id) {
             const policyService = new PolicyService()
             const response = await policyService.getPolicyById(this.props.id)
@@ -51,7 +55,7 @@ export class AddNewInsurance extends React.Component<any, any> {
     onChangeHandler(event) {
         const fieldName = event.target.name
         const value = event.target.value
-
+        console.log(fieldName, value)
         this.setState((oldState, props) => ({
             values : {...oldState['values'], [fieldName]: value},
         }))
@@ -90,6 +94,9 @@ export class AddNewInsurance extends React.Component<any, any> {
     render() {
 
         return (
+
+            <div>
+            <Header/>
 
             <div className="AddNewInsurance">
 
@@ -162,6 +169,24 @@ export class AddNewInsurance extends React.Component<any, any> {
                                 </Validate>
                             </Grid>
 
+                            <Grid xs={12} md={6}>
+                            <Autocomplete
+                                multiple
+                                id="tags-outlined"
+                                options={this.state.tags}
+                                getOptionLabel={(option: {id: number, name: string}) => option.name}
+                                filterSelectedOptions
+                                onChange={this.onChangeHandler}
+                                renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Tags"
+                                    placeholder="Tags"
+                                />
+                                )}
+                            />
+                            </Grid>
+
                             <Grid xs={12}>
                                 <Button variant="contained" onClick={this.onSubmit}> Submit </Button>
                             </Grid>
@@ -174,6 +199,7 @@ export class AddNewInsurance extends React.Component<any, any> {
 
                 </Container>
                 
+            </div>
             </div>
 
 

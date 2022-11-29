@@ -1,6 +1,10 @@
 import {sessionQuery} from '../stores/session.query'
+import { LoginService } from "./login.service" 
 
 export class PolicyService {
+
+    // loginService = new LoginService()
+
     URL = 'http://localhost:8888/'
 
     async addPolicy(formData) {
@@ -17,7 +21,7 @@ export class PolicyService {
             body: JSON.stringify(data),
             headers: {
                 "Content-Type": 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+                "Authorization": `Bearer ${LoginService.getToken()}`
             }
         })
 
@@ -39,7 +43,7 @@ export class PolicyService {
             body: JSON.stringify(data),
             headers: {
                 "Content-Type": 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+                "Authorization": `Bearer ${LoginService.getToken()}`
             }
         })
         let body = res.json()
@@ -52,7 +56,7 @@ export class PolicyService {
             method: 'DELETE',
             headers: {
                 "Content-Type": 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+                "Authorization": `Bearer ${LoginService.getToken()}`
             }
         })
 
@@ -64,7 +68,7 @@ export class PolicyService {
             method: 'GET',
             headers: {
                 "Content-Type": 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+                "Authorization": `Bearer ${LoginService.getToken()}`
             }
         })
         const body = res.json()
@@ -77,10 +81,21 @@ export class PolicyService {
             body: JSON.stringify(policyData),
             headers: {
                 "Content-Type": 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+                "Authorization": `Bearer ${LoginService.getToken()}`
             }
         })
         return res
+    }
+
+    async getTags() {
+        let res = await fetch(`${this.URL}api/getTags`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": 'application/json',
+            }
+        })
+
+        return res.json()
     }
 
 }

@@ -12,6 +12,7 @@ import { CardActionArea } from '@mui/material';
 import { Link } from 'react-router-dom'
 import Pagination from '@mui/material/Pagination';
 import './InsuranceList.css';
+import {Header} from '../../components/Header/Header'
 
 const InsuranceList = () => {
     const [policyList, updatePolicyList] = useState([])
@@ -76,7 +77,6 @@ const InsuranceList = () => {
                 let companyObject: any
                 companyObject = Company
                 return (
-
                     <Card sx= {{marginTop: "50px", width: "90%"}} key={id}>
                         <CardActionArea component={Link} to={`/viewInsurance/${id}`}>
                             <CardContent>
@@ -134,6 +134,9 @@ const InsuranceList = () => {
     }, [])
 
     return(
+        <div>
+        <Header />
+
         <div className="InsuranceView">
             <Typography variant='h3'>Insurances</Typography>
             <div className="searchContainer">
@@ -162,6 +165,7 @@ const InsuranceList = () => {
                     </div>
                 </div> : ''
             }
+        </div>
         </div>
     )
 }

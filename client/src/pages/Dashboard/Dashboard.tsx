@@ -6,6 +6,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import {DashboardService} from "../../services/dashboard.service";
+import {Header} from '../../components/Header/Header'
 
 const Dashboard = () => {
     const [maxRatingsPolicies, setMaxRatingPolicies] = useState([])
@@ -24,36 +25,39 @@ const Dashboard = () => {
     }, [])
 
     return(
-        <div className="dashboardPage">
-            <Typography variant="h3" marginTop={2}>Dashboard</Typography>
-            <Grid container spacing={2} marginTop={2}>
-                <Grid xs={6} padding={5}>
-                    <Typography>Top 15 Insurance Policies by MAX Rating recieved</Typography>
-                    <List dense={false}>
-                        {maxRatingsPolicies.map(({ id, name, count }) => (
-                            <ListItem key={id}>
-                                <ListItemText
-                                    primary={name}
-                                    secondary={`Max Rating Recieved Count: ${count}`}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
+        <div>
+            <Header />
+            <div className="dashboardPage">
+                <Typography variant="h3" marginTop={2}>Dashboard</Typography>
+                <Grid container spacing={2} marginTop={2}>
+                    <Grid xs={6} padding={5}>
+                        <Typography>Top 15 Insurance Policies by MAX Rating recieved</Typography>
+                        <List dense={false}>
+                            {maxRatingsPolicies.map(({ id, name, count }) => (
+                                <ListItem key={id}>
+                                    <ListItemText
+                                        primary={name}
+                                        secondary={`Max Rating Recieved Count: ${count}`}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Grid>
+                    <Grid xs={6} padding={5}>
+                        <Typography>{"Users searched for Policies having Cover Amount < 1000"}</Typography>
+                        <List dense={false}>
+                            {usersList.map(({first_name, email}) => (
+                                <ListItem>
+                                    <ListItemText
+                                        primary={first_name}
+                                        secondary={email}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Grid>
                 </Grid>
-                <Grid xs={6} padding={5}>
-                    <Typography>{"Users searched for Policies having Cover Amount < 1000"}</Typography>
-                    <List dense={false}>
-                        {usersList.map(({first_name, email}) => (
-                            <ListItem>
-                                <ListItemText
-                                    primary={first_name}
-                                    secondary={email}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Grid>
-            </Grid>
+            </div>
         </div>
     )
 }

@@ -1,6 +1,6 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
-const { SecurityQuestion } = require("../models"); // import  model
+const { SecurityQuestion, Tag } = require("../models"); // import  model
 const db = require('../models')
 const passport = require('passport')
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
@@ -16,6 +16,12 @@ router.get("/getSecurityQuestions", async (req, res) => {
     res.json({questions: securityQuestions});
 
 });
+
+router.get("/getTags", async (req, res) => {
+  const tags = await Tag.findAll({ attributes: ['id', 'name'], where: {isActive: true}})
+
+  res.status(200).send({tags})
+})
 
 router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: false }), async (req,res) => {
   const [result, metadata] = await db.sequelize.query('SELECT ip.id, ip.name, COUNT(*) FROM Rating ra JOIN InsurancePolicy ip ON ra.policy_id = ip.id WHERE ra.rating = (Select MAX(rating) FROM Rating) GROUP BY ra.policy_id ORDER BY COUNT(*) DESC LIMIT 15')

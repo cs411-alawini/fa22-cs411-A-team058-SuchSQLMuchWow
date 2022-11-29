@@ -1,3 +1,5 @@
+import {LoginService} from './login.service'
+
 export class UserActivityService{
     URL = 'http://localhost:8888/userActivity/'
 
@@ -11,7 +13,7 @@ export class UserActivityService{
             body: JSON.stringify(data),
             headers: {
                 "Content-Type": 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem('jwtToken')}`
+                "Authorization": `Bearer ${LoginService.getToken()}`
             }
         })
 

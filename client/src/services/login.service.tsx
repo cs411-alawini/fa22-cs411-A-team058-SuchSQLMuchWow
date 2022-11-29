@@ -49,11 +49,31 @@ export class LoginService {
         if(res.ok) {
             let {token, role} = (await res.json())
             console.log(token)
+            // Remove this line
             sessionStore.update(state => ({token, role}))
-            await localStorage.setItem('jwtToken', token)
-            await localStorage.setItem('role', role)
+
+            let tokenData = {
+                token,
+                role,
+                expiresAt: new Date(new Date().getTime() + (60000 * 60 * 24))
+            }
+
+            localStorage.setItem('jwtToken', JSON.stringify(tokenData))
+            // await localStorage.setItem('role', role)
         } else
             throw Error((await res.json()).error)
+
+    }
+
+    static getToken() {
+        let token = localStorage.getItem('jwtToken')
+        if(token === null)
+            return null
+        let tokenData: {token: string, role: number, expiresAt: Date} = JSON.parse(token)
+        if(Date.now() > new Date(tokenData.expiresAt).getTime()) {
+            return null
+        }
+        return tokenData.token
 
     }
     
