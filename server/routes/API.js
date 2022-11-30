@@ -24,7 +24,7 @@ router.get("/getTags", async (req, res) => {
 })
 
 router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: false }), async (req,res) => {
-  const [result, metadata] = await db.sequelize.query('SELECT ip.id, ip.name, COUNT(*) FROM Rating ra JOIN InsurancePolicy ip ON ra.policy_id = ip.id WHERE ra.rating = (Select MAX(rating) FROM Rating) GROUP BY ra.policy_id ORDER BY COUNT(*) DESC LIMIT 15')
+  const [result, metadata] = await db.sequelize.query('SELECT ip.id, ip.name, COUNT(*) FROM Rating ra JOIN InsurancePolicy ip ON ra.InsurancePolicyId = ip.id WHERE ra.rating = (Select MAX(rating) FROM Rating) GROUP BY ra.InsurancePolicyId ORDER BY COUNT(*) DESC LIMIT 15')
 
   let modifiedResults = result.map(val => {
     return {name: val.name, id: val.id, count: val['COUNT(*)']}
@@ -35,7 +35,7 @@ router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: fals
 
 router.get('/dashboard/usersInCoverAmountRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
-  const [result, metadata] = await db.sequelize.query('SELECT DISTINCT u.email, u.state, u.first_name FROM UserActivity ua JOIN User u ON (ua.user_id = u.id) JOIN (SELECT id FROM InsurancePolicy WHERE cover_amt < 1000) AS temp ON (ua.policy_id = temp.id)')
+  const [result, metadata] = await db.sequelize.query('SELECT DISTINCT u.email, u.state, u.first_name FROM UserActivity ua JOIN User u ON (ua.UserId = u.id) JOIN (SELECT id FROM InsurancePolicy WHERE cover_amt < 1000) AS temp ON (ua.InsurancePolicyId = temp.id)')
 
   res.send({data: result})
 
