@@ -3,6 +3,8 @@ const router = express.Router();        // import express router
 const { SecurityQuestion, Tag } = require("../models"); // import  model
 const db = require('../models')
 const passport = require('passport')
+const fs = require('fs')
+const path = require('path')
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 // const dashboardRouter = require('./Dashboard')
 
