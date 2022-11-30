@@ -20,9 +20,10 @@ export class AddNewInsurance extends React.Component<any, any> {
 
     constructor(props: {}) {
         super(props)
-        this.state = {values:{'policyType': '1'}, tags: []}
+        this.state = {values:{'policyType': '1', tags: []}, tags: []}
         this.onChangeHandler = this.onChangeHandler.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
+        this.autocompleteChangeHandler = this.autocompleteChangeHandler.bind(this)
     }
 
     async componentDidMount() {
@@ -32,7 +33,7 @@ export class AddNewInsurance extends React.Component<any, any> {
         if (this.props.id) {
             const policyService = new PolicyService()
             const response = await policyService.getPolicyById(this.props.id)
-            const policyData = response.data[0]
+            const policyData = response.data
             const policyTypeMap = {
                 "Auto": 1,
                 "Home": 2,
@@ -46,6 +47,7 @@ export class AddNewInsurance extends React.Component<any, any> {
                     coverAmt: policyData.cover_amt,
                     premiumPM: policyData.premium_per_month,
                     premiumPA: policyData.premium_per_annum,
+                    tags: [...policyData.tags]
                 },
                 editablePolicyData: policyData
             }))
@@ -55,12 +57,16 @@ export class AddNewInsurance extends React.Component<any, any> {
     onChangeHandler(event) {
         const fieldName = event.target.name
         const value = event.target.value
-        console.log(fieldName, value)
+        // console.log(fieldName, value)
         this.setState((oldState, props) => ({
             values : {...oldState['values'], [fieldName]: value},
         }))
-        
+    }
 
+    autocompleteChangeHandler(event, value) {
+        this.setState((oldState, props) => ({
+            values : {...oldState['values'], tags: value},
+        }))
     }
 
     async onSubmit(event) {
@@ -72,6 +78,7 @@ export class AddNewInsurance extends React.Component<any, any> {
                 cover_amt: values.coverAmt,
                 premium_per_month: values.premiumPM,
                 premium_per_annum: values.premiumPA,
+                tags: [...values.tags]
             }
             const res = await this.policyService.updatePolicyById(newPolicyObject)
             if(res.ok) {
@@ -172,11 +179,12 @@ export class AddNewInsurance extends React.Component<any, any> {
                             <Grid xs={12} md={6}>
                             <Autocomplete
                                 multiple
-                                id="tags-outlined"
+                                id="tags"
                                 options={this.state.tags}
+                                value={this.state.values.tags}
                                 getOptionLabel={(option: {id: number, name: string}) => option.name}
                                 filterSelectedOptions
-                                onChange={this.onChangeHandler}
+                                onChange={this.autocompleteChangeHandler}
                                 renderInput={(params) => (
                                 <TextField
                                     {...params}

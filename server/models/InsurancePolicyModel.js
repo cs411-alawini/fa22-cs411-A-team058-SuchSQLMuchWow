@@ -39,7 +39,9 @@ module.exports = (sequelize, DataTypes) => {
     Ins_Policy.associate = (models) => {
       Ins_Policy.belongsTo(models.Company, {foreignKey: 'company_id'});
       Ins_Policy.belongsTo(models.PolicyType, {foreignKey: 'type'})
-      Ins_Policy.belongsTo(models.Rating, {foreignKey: 'policy_id'})  
+      Ins_Policy.belongsToMany(models.User, {through: models.Rating})  
+      Ins_Policy.belongsToMany(models.Tag, {through: models.PolicyTag})
+      Ins_Policy.belongsToMany(models.User, {through: models.UserActivity})
     };
     
     return Ins_Policy;

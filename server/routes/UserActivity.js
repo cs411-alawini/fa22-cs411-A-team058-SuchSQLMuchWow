@@ -12,8 +12,8 @@ router.post('/addUserActivity', passport.authenticate('jwt', { session: false })
         const userId = req.user.id 
     
         await UserActivity.create({
-            user_id: userId,
-            policy_id: policyId,
+            UserId: userId,
+            InsurancePolicyId: policyId,
             search_string: searchString
         })
     

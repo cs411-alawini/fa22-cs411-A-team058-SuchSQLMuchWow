@@ -14,6 +14,11 @@
     text-align: left;
 }
 
+.tagContainer {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .searchContainer {
     width: 180%;
     /* display: flex;
@@ -59,22 +64,27 @@
     justify-content: space-between;
 }
 
-.actionContainer{
+/* .actionContainer{
     position: absolute;
     display: flex;
     bottom: 10px;
     right: 10px;
+} */
+
+.MuiCardActions-root {
+    display: flex;
+    justify-content: flex-end;
 }
 
-.actionContainer > button:hover{
+.MuiCardActions-root > button:hover{
     transform: scale(120%);
 }
 
-.actionContainer > button {
+.MuiCardActions-root > button {
     transition: all 0.2s;
 }
 
-.actionContainer > button > img {
+.MuiCardActions-root > button > img {
     width: 25px;
 }
 

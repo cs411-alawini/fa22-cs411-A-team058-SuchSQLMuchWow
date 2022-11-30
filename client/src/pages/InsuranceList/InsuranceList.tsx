@@ -8,14 +8,15 @@ import { PolicyService } from '../../services/policy.service';
 import {UserActivityService} from "../../services/userActivity.service";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { CardActionArea } from '@mui/material';
+import { CardActionArea, CardActions } from '@mui/material';
 import { Link } from 'react-router-dom'
 import Pagination from '@mui/material/Pagination';
 import './InsuranceList.css';
 import {Header} from '../../components/Header/Header'
+import Chip from '@mui/material/Chip';
 
 const InsuranceList = () => {
-    const [policyList, updatePolicyList] = useState([])
+    const [policyList, updatePolicyList] = useState<any[]>([])
     const [searchText, updateSearchText] = useState('')
     const [deleteId, setDeleteId] = useState('')
     const [isPopupVisible, setPopupVisibility] = useState(false)
@@ -40,11 +41,13 @@ const InsuranceList = () => {
         setTotalCount(Math.ceil(response.count/pageCount))
     }
 
-    const handleOnEditInsuranceClick = (id) => {
+    const handleOnEditInsuranceClick = (event, id) => {
+        event.stopPropagation()
         navigate(`/editInsurance/${id}`);
     }
 
-    const handleOnDeleteInsuranceClick = (id) => {
+    const handleOnDeleteInsuranceClick = (event, id) => {
+        event.stopPropagation()
         setDeleteId(id)
         setPopupVisibility(true)
     }
@@ -73,7 +76,7 @@ const InsuranceList = () => {
 
         if (policyList.length<=0) return <Typography variant="h5">No Policies Available</Typography>
         else {
-            return policyList.map(({ id,name, cover_amt, premium_per_annum, premium_per_month, isActive, Company, type }, index) => {
+            return policyList.map(({ id,name, cover_amt, premium_per_annum, premium_per_month, Company, type, tags }, index) => {
                 let companyObject: any
                 companyObject = Company
                 return (
@@ -85,6 +88,11 @@ const InsuranceList = () => {
                                     <Typography variant="h5">{name}</Typography>
                                     <Typography>{companyObject.name}</Typography>
                                 </div>
+
+                                <div className="tagContainer">
+                                    {tags.map(tag => <Chip label={tag.name} sx={{marginRight: '5px', background: '#bfffa6', marginBottom: '5px'}}></Chip>)}
+                                </div>
+
                                 <hr />
                                 <div className="featureContainer">
                                     <div className="subContainer">
@@ -111,14 +119,16 @@ const InsuranceList = () => {
                                     <Typography>Status: </Typography>
                                     {isActive ? <div className="green dot"></div> : <div className="red dot"></div>}
                                 </div> */}
-                                <br /> <br></br> <br></br>
-                                <div className="actionContainer">
-                                    <button onClick={() => handleOnEditInsuranceClick(id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>
-                                    <button onClick={() => handleOnDeleteInsuranceClick(id)}><img src="./delete.png" alt="Edit Button" /></button>
-                                </div>
+                                
                             </div>
                             </CardContent>
                         </CardActionArea>
+                        <CardActions>
+                            
+                            <button onClick={(event) => handleOnEditInsuranceClick(event, id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>
+                            <button onClick={(event) => handleOnDeleteInsuranceClick(event, id)}><img src="./delete.png" alt="Edit Button" /></button>
+                            
+                        </CardActions>
                     </Card>
 
 

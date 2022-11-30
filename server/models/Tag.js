@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Tags = sequelize.define("Tag", {  
+    const Tag = sequelize.define("Tag", {  
       id: {
         type:DataTypes.INTEGER,
         primaryKey: true,
@@ -21,5 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       }
     }, {tableName: 'Tag', timestamps: false});
 
-    return Tags;
+    Tag.associate = (models) => {
+        Tag.belongsToMany(models.InsurancePolicy, {through: models.PolicyTag})  
+      };
+
+    return Tag;
   };

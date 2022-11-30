@@ -1,11 +1,8 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
 const passport = require('passport')
-const { InsurancePolicy , Employ, Company,  PolicyType} = require("../models"); // import  model
+const { InsurancePolicy , Employ, Company,  PolicyType, PolicyTag, Tag} = require("../models"); // import  model
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
-var Sequelize = require("sequelize");
-const Employs = require("../models/Employs");
-const User = require("../models/User");
 const { Op } = require("sequelize");
 
 router.get("/getPoliciesCompany", passport.authenticate('jwt', { session: false }),  async (req, res) => {
@@ -13,9 +10,9 @@ router.get("/getPoliciesCompany", passport.authenticate('jwt', { session: false 
 
     let data = await Employ.findOne({
         where:{
-            user_id: req.user.id
+            UserId: req.user.id
         },
-        attributes: ['company_id']
+        attributes: ['CompanyId']
     });
 
     let policies = InsurancePolicy.findAll({
@@ -34,20 +31,23 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
     try {
         let data = await Employ.findOne({
             where:{
-                user_id: req.user.id
+                UserId: req.user.id
             },
-            attributes: ['company_id']
+            attributes: ['CompanyId']
         });
     
         if(data) {
-            await InsurancePolicy.create({
+            let policy = await InsurancePolicy.create({
                 name: req.body.name,
                 cover_amt: req.body.coverAmt,
                 type: req.body.policyType,
                 premium_per_month: req.body.premiumPM,
                 premium_per_annum: req.body.premiumPA,
-                company_id: data.company_id
+                company_id: data.CompanyId
             })
+
+            let tags = req.body.tags.map(val => {return {InsurancePolicyId: policy.id, TagId: val.id}})
+            await PolicyTag.bulkCreate(tags)
     
             res.status(200).send('Policy created successfully')
     
@@ -64,11 +64,19 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
 router.get('/getPolicy/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const policyId = req.params.id
 
-    var policies = await InsurancePolicy.findAll({where: {isActive: true, id: policyId},include: [Company, PolicyType], raw: true});
-    let filteredPolicies = policies.map(val => {
-        return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
-    })
-    res.json({data: filteredPolicies});
+    var policy = await InsurancePolicy.findOne({where: {isActive: true, id: policyId},include: [Company, PolicyType], raw: true});
+
+    var policy_tags = await InsurancePolicy.findAll({where: {id: policy.id, isActive: true}, include: [Tag]})
+    // console.log(policy_tags)
+    let tags = policy_tags[0]['Tags'].map(tag => {return {id: tag.id, name: tag.name}})
+    var data = {id: policy.id, type: policy['PolicyType.type'], name: policy.name, cover_amt: policy.cover_amt, premium_per_month: policy.premium_per_month, premium_per_annum: policy.premium_per_annum, isActive: policy.isActive, Company: {name: policy['Company.name']}, tags}
+
+
+
+    // let filteredPolicies = policies.map(val => {
+    //     return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
+    // })
+    res.json({data});
 
 })
 
@@ -85,9 +93,18 @@ router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),
         var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true}, include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount})
     }
 
-    let filteredPolicies = policies.map(val => {
-        return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}}
-    })
+    let filteredPolicies = []
+
+    for(let val of policies) {
+        var policy = await InsurancePolicy.findAll({where: {id: val.id, isActive: true}, include: [Tag]})
+        let tags = policy[0]['Tags'].map(tag => {return {id: tag.id, name: tag.name}})
+        filteredPolicies.push({id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}, tags})
+        
+    }
+
+    // let filteredPolicies = policies.map((val) => {
+    //     return {id: val.id, type: val['PolicyType.type'], name: val.name, cover_amt: val.cover_amt, premium_per_month: val.premium_per_month, premium_per_annum: val.premium_per_annum, isActive: val.isActive, Company: {name: val['Company.name']}, tags: }
+    // })
     res.json({data: filteredPolicies, count});
 
 });
@@ -95,9 +112,12 @@ router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),
 router.put('/updatePolicy', passport.authenticate('jwt', { session: false }), async (req, res) => {
 
     try {
-        const {id, name, cover_amt, premium_per_annum, premium_per_month} = req.body
+        const {id, name, cover_amt, premium_per_annum, premium_per_month, tags} = req.body
 
         await InsurancePolicy.update({name, cover_amt, premium_per_annum, premium_per_month}, {where: {id}});
+        for(let tag of tags) {
+            await PolicyTag.findOrCreate({where: {InsurancePolicyId: id, TagId: tag.id}})
+        }
 
         res.status(200).send("Policy updated successfully")
 
@@ -112,7 +132,7 @@ router.delete('/deletePolicy/:id', passport.authenticate('jwt', { session: false
     try {
         let policyId = req.params.id
     
-        let company_id = (await Employ.findOne({where: {user_id: req.user.id}, attributes: ['company_id']})).company_id
+        let company_id = (await Employ.findOne({where: {UserId: req.user.id}, attributes: ['CompanyId']})).CompanyId
     
         let policy = await InsurancePolicy.findOne({where: {id: policyId}})
     

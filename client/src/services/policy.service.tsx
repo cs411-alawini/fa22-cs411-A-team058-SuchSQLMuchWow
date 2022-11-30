@@ -13,8 +13,11 @@ export class PolicyService {
             coverAmt: Number(formData.coverAmt),
             policyType: Number(formData.policyType),
             premiumPA: Number(formData.premiumPA),
-            premiumPM: Number(formData.premiumPM)
+            premiumPM: Number(formData.premiumPM),
+            tags: formData.tags
         }
+
+        console.log(data)
         
         let res = await fetch(`${this.URL}insurance/addPolicy`, {
             method: 'POST',
