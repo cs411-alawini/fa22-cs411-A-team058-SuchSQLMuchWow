@@ -1,10 +1,11 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
-const { SecurityQuestion, Tag } = require("../models"); // import  model
+const { SecurityQuestion, Tag, User} = require("../models"); // import  model
 const db = require('../models')
 const passport = require('passport')
 const fs = require('fs')
 const path = require('path')
+const {QueryTypes} = require('sequelize')
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 // const dashboardRouter = require('./Dashboard')
 
@@ -35,13 +36,56 @@ router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: fals
   res.send({data: modifiedResults})
 })
 
-router.get('/dashboard/usersInCoverAmountRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
+router.get('/dashboard/getUserCountByState', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
-  const [result, metadata] = await db.sequelize.query('SELECT DISTINCT u.email, u.state, u.first_name FROM UserActivity ua JOIN User u ON (ua.UserId = u.id) JOIN (SELECT id FROM InsurancePolicy WHERE cover_amt < 1000) AS temp ON (ua.InsurancePolicyId = temp.id)')
+  const [result, metadata] = await db.sequelize.query('CALL users_by_state (:company_id)', {replacements: { company_id: 1000}, type: QueryTypes.SELECT})
 
-  res.send({data: result})
+  let data = {}
+  Object.keys(result).forEach(key => {
+    data[result[key].state] = result[key].user_count
+  })
+
+  res.json({data})
 
 })
+
+router.get('/dashboard/getPolicyCounts', passport.authenticate('jwt', { session: false }), async (req,res) => {
+
+  const [result, metadata] = await db.sequelize.query('CALL get_policy_counts (:company_id)', {replacements: { company_id: 1000}, type: QueryTypes.SELECT})
+
+  console.log(result)
+  let data = {}
+  Object.keys(result).forEach(key => {
+    data[result[key].policy_type] = result[key].policy_count
+  })
+
+  res.json({data})
+
+})
+
+// router.get('/updateStates', async (req, res) => {
+
+//   const users = await User.findAll()
+//   let states = [ 'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY' ]
+//   users.forEach(async (user) => {
+
+
+//     await User.update({state: `${states[Math.floor(Math.random()*(states.length - 1))]}`}, {where: {id: user.id}})
+
+//   })
+
+//   res.send("OK")
+
+
+// })
+
+// router.get('/dashboard/usersInCoverAmountRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
+
+//   const [result, metadata] = await db.sequelize.query('SELECT DISTINCT u.email, u.state, u.first_name FROM UserActivity ua JOIN User u ON (ua.UserId = u.id) JOIN (SELECT id FROM InsurancePolicy WHERE cover_amt < 1000) AS temp ON (ua.InsurancePolicyId = temp.id)')
+
+//   res.send({data: result})
+
+// })
 
 
 module.exports = router

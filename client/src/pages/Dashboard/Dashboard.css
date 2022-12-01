@@ -4,3 +4,13 @@
     justify-content: space-between;
     width: 100%;
 }
+
+.doughnutContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.doughnutContainer canvas {
+    width: 400px !important;
+    height: 400px !important;
+}
