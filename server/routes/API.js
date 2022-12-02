@@ -63,6 +63,39 @@ router.get('/dashboard/getPolicyCounts', passport.authenticate('jwt', { session:
 
 })
 
+router.post('/dashboard/getRatingRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
+
+  const {rating} = req.body
+  const [result, metadata] = await db.sequelize.query('CALL get_ratings_range (:company_id, :ratingValue)', {replacements: { company_id: 20, ratingValue: rating}, type: QueryTypes.SELECT})
+
+  // console.log(result)
+  let data = []
+  Object.keys(result).forEach(key => {
+    data.push(result[key].name)
+  })
+
+  console.log(data)
+
+  res.json({data})
+
+})
+
+router.get('/dashboard/getSearchByMonth', passport.authenticate('jwt', { session: false }), async (req,res) => {
+
+  const [result, metadata] = await db.sequelize.query('CALL get_search_count_by_month (:company_id)', {replacements: { company_id: 1000}, type: QueryTypes.SELECT})
+
+  // console.log(result)
+  let data = {}
+  Object.keys(result).forEach(key => {
+    data[result[key].ExecMonth] = result[key].MonthCount
+  })
+
+  console.log(data)
+
+  res.json({data})
+
+})
+
 // router.get('/updateStates', async (req, res) => {
 
 //   const users = await User.findAll()
