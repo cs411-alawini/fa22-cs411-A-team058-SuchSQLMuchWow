@@ -8,6 +8,7 @@ import InsuranceList from "./pages/InsuranceList";
 import EditInsurance from "./pages/EditInsurance";
 import Dashboard from "./pages/Dashboard";
 import ViewInsurance from './pages/ViewInsurance'
+import UserRouteGuard from "./hocs/UserRouteGuard";
 
 export const router = createBrowserRouter([
     {
@@ -17,7 +18,7 @@ export const router = createBrowserRouter([
 
         {
             path: "/addInsurance",
-            element: AuthenticationHOC(AddNewInsurance)
+            element: AuthenticationHOC(UserRouteGuard(AddNewInsurance))
         },
         {
           path: '/register',
@@ -37,11 +38,11 @@ export const router = createBrowserRouter([
         },
         {
           path: '/editInsurance/:id',
-          element: AuthenticationHOC(EditInsurance)
+          element: AuthenticationHOC(UserRouteGuard(EditInsurance))
         },
         {
           path: '/dashboard',
-          element: AuthenticationHOC(Dashboard)
+          element: AuthenticationHOC(UserRouteGuard(Dashboard))
         }
       ]
     },

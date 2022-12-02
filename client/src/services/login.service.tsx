@@ -76,6 +76,16 @@ export class LoginService {
         return tokenData.token
 
     }
-    
+
+    static getRole() {
+        let token = localStorage.getItem('jwtToken')
+        if(token === null)
+            return null
+        let tokenData: {token: string, role: number, expiresAt: Date} = JSON.parse(token)
+        if(Date.now() > new Date(tokenData.expiresAt).getTime()) {
+            return null
+        }
+        return tokenData.role
+    }
 
 }

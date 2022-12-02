@@ -11,10 +11,10 @@ export class Header extends React.Component<any> {
     //     super(props)
     // }
 
-    jwtToken =LoginService.getToken()
+    jwtToken = LoginService.getToken()
+    isUser = LoginService.getRole() === 2
 
     render() {
-        // console.log(this.props.jwtToken)
         return (
             
             <div className='Header'> 
@@ -24,8 +24,8 @@ export class Header extends React.Component<any> {
                         this.jwtToken ? (
                             <div className="navContainer">
                                 <Link to={"/insurancelist"}><Button>Insurance List</Button></Link>
-                                <Link to={"/addInsurance"}><Button>Add Insurance</Button></Link>
-                                <Link to={"/dashboard"}><Button>Dashboard</Button></Link>
+                                {!this.isUser && <Link to={"/addInsurance"}><Button>Add Insurance</Button></Link>}
+                                {!this.isUser && <Link to={"/dashboard"}><Button>Dashboard</Button></Link>}
                             </div>
                         ) : (
                             <div className="navContainer">

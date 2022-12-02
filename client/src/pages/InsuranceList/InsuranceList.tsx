@@ -14,8 +14,10 @@ import Pagination from '@mui/material/Pagination';
 import './InsuranceList.css';
 import {Header} from '../../components/Header/Header'
 import Chip from '@mui/material/Chip';
+import {LoginService} from "../../services/login.service";
 
 const InsuranceList = () => {
+    const isUserRole = LoginService.getRole()
     const [policyList, updatePolicyList] = useState<any[]>([])
     const [searchText, updateSearchText] = useState('')
     const [deleteId, setDeleteId] = useState('')
@@ -124,9 +126,9 @@ const InsuranceList = () => {
                             </CardContent>
                         </CardActionArea>
                         <CardActions>
-                            
-                            <button onClick={(event) => handleOnEditInsuranceClick(event, id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>
-                            <button onClick={(event) => handleOnDeleteInsuranceClick(event, id)}><img src="./delete.png" alt="Edit Button" /></button>
+
+                            {!isUserRole && <button onClick={(event) => handleOnEditInsuranceClick(event, id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>}
+                            {!isUserRole && <button onClick={(event) => handleOnDeleteInsuranceClick(event, id)}><img src="./delete.png" alt="Edit Button" /></button>}
                             
                         </CardActions>
                     </Card>
