@@ -9,13 +9,17 @@ import EditInsurance from "./pages/EditInsurance";
 import Dashboard from "./pages/Dashboard";
 import ViewInsurance from './pages/ViewInsurance'
 import UserRouteGuard from "./hocs/UserRouteGuard";
+import Home from './pages/Home'
 
 export const router = createBrowserRouter([
     {
       path: "/",
       element: <App />,
       children: [
-
+        {
+          path: '/home',
+          element: <Home />
+        },
         {
             path: "/addInsurance",
             element: AuthenticationHOC(UserRouteGuard(AddNewInsurance))
