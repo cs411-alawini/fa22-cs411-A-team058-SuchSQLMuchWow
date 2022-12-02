@@ -1,6 +1,6 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
-const { SecurityQuestion, Tag, User} = require("../models"); // import  model
+const { SecurityQuestion, Tag, User, Employ} = require("../models"); // import  model
 const db = require('../models')
 const passport = require('passport')
 const fs = require('fs')
@@ -38,7 +38,14 @@ router.get('/dashboard/maxRatings', passport.authenticate('jwt', { session: fals
 
 router.get('/dashboard/getUserCountByState', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
-  const [result, metadata] = await db.sequelize.query('CALL users_by_state (:company_id)', {replacements: { company_id: 1000}, type: QueryTypes.SELECT})
+  let employData = await Employ.findOne({
+    where:{
+        UserId: req.user.id
+    },
+    attributes: ['CompanyId']
+});
+
+  const [result, metadata] = await db.sequelize.query('CALL users_by_state (:company_id)', {replacements: { company_id: employData.CompanyId}, type: QueryTypes.SELECT})
 
   let data = {}
   Object.keys(result).forEach(key => {
@@ -51,9 +58,15 @@ router.get('/dashboard/getUserCountByState', passport.authenticate('jwt', { sess
 
 router.get('/dashboard/getPolicyCounts', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
-  const [result, metadata] = await db.sequelize.query('CALL get_policy_counts (:company_id)', {replacements: { company_id: 1000}, type: QueryTypes.SELECT})
+  let employData = await Employ.findOne({
+    where:{
+        UserId: req.user.id
+    },
+    attributes: ['CompanyId']
+});
 
-  console.log(result)
+  const [result, metadata] = await db.sequelize.query('CALL get_policy_counts (:company_id)', {replacements: { company_id: employData.CompanyId}, type: QueryTypes.SELECT})
+
   let data = {}
   Object.keys(result).forEach(key => {
     data[result[key].policy_type] = result[key].policy_count
@@ -65,8 +78,15 @@ router.get('/dashboard/getPolicyCounts', passport.authenticate('jwt', { session:
 
 router.post('/dashboard/getRatingRange', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
+  let employData = await Employ.findOne({
+    where:{
+        UserId: req.user.id
+    },
+    attributes: ['CompanyId']
+});
+
   const {rating} = req.body
-  const [result, metadata] = await db.sequelize.query('CALL get_ratings_range (:company_id, :ratingValue)', {replacements: { company_id: 20, ratingValue: rating}, type: QueryTypes.SELECT})
+  const [result, metadata] = await db.sequelize.query('CALL get_ratings_range (:company_id, :ratingValue)', {replacements: { company_id: employData.CompanyId, ratingValue: rating}, type: QueryTypes.SELECT})
 
   // console.log(result)
   let data = []
@@ -82,7 +102,14 @@ router.post('/dashboard/getRatingRange', passport.authenticate('jwt', { session:
 
 router.get('/dashboard/getSearchByMonth', passport.authenticate('jwt', { session: false }), async (req,res) => {
 
-  const [result, metadata] = await db.sequelize.query('CALL get_search_count_by_month (:company_id)', {replacements: { company_id: 1000}, type: QueryTypes.SELECT})
+  let employData = await Employ.findOne({
+    where:{
+        UserId: req.user.id
+    },
+    attributes: ['CompanyId']
+});
+
+  const [result, metadata] = await db.sequelize.query('CALL get_search_count_by_month (:company_id)', {replacements: { company_id: employData.CompanyId}, type: QueryTypes.SELECT})
 
   // console.log(result)
   let data = {}

@@ -66,6 +66,27 @@ export class PolicyService {
         return res
     }
 
+    async updateRating(policyId, rating) {
+
+        const data = {
+            rating,
+            policyId
+        }
+        let res = await fetch(`${this.URL}insurance/updateRating`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": 'application/json',
+                "Authorization": `Bearer ${LoginService.getToken()}`
+            }
+        })
+        let body = res.json()
+
+        return body
+
+
+    }
+
     async getPolicyById(id) {
         let res = await fetch(`${this.URL}insurance/getPolicy/${id}`, {
             method: 'GET',

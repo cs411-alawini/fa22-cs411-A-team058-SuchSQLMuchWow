@@ -1,7 +1,7 @@
 const express = require("express");     // import express
 const router = express.Router();        // import express router 
 const passport = require('passport')
-const { InsurancePolicy , Employ, Company,  PolicyType, PolicyTag, Tag} = require("../models"); // import  model
+const { InsurancePolicy , Employ, Company,  PolicyType, PolicyTag, Tag, Rating} = require("../models"); // import  model
 // const { checkedIfLoggedIn } = require("../middlewares/LoggedInMiddleware");
 const { Op } = require("sequelize");
 
@@ -17,13 +17,37 @@ router.get("/getPoliciesCompany", passport.authenticate('jwt', { session: false 
 
     let policies = InsurancePolicy.findAll({
         where:{
-            company_id: data.company_id
+            company_id: data.CompanyId
         }
     });
     res.json({returnValue: policies});
 
 });
 
+router.post('/updateRating', passport.authenticate('jwt', { session: false }), async (req, res) => {
+
+    try {
+        const {policyId, rating} = req.body
+        const userId = req.user.id
+    
+        const data = await Rating.findOne({where: {InsurancePolicyId: policyId, UserId: userId}})
+        if(data) {
+            await Rating.update({rating}, {where: {InsurancePolicyId: policyId, UserId: userId}})
+        } else {
+            await Rating.create({
+                rating,
+                InsurancePolicyId: policyId,
+                UserId: userId
+            })
+        }
+
+        res.send("OK")
+    } catch(e) {
+        console.log(e)
+        res.status(500).send("An error occured")
+    }
+
+})
 
 
 router.post('/addPolicy', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -64,12 +88,16 @@ router.post('/addPolicy', passport.authenticate('jwt', { session: false }), asyn
 router.get('/getPolicy/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const policyId = req.params.id
 
+    const userid = req.user.id
+
     var policy = await InsurancePolicy.findOne({where: {isActive: true, id: policyId},include: [Company, PolicyType], raw: true});
+
+    var rating = await Rating.findOne({where: {InsurancePolicyId: policy.id, UserId: userid}})
 
     var policy_tags = await InsurancePolicy.findAll({where: {id: policy.id, isActive: true}, include: [Tag]})
     // console.log(policy_tags)
     let tags = policy_tags[0]['Tags'].map(tag => {return {id: tag.id, name: tag.name}})
-    var data = {id: policy.id, type: policy['PolicyType.type'], name: policy.name, cover_amt: policy.cover_amt, premium_per_month: policy.premium_per_month, premium_per_annum: policy.premium_per_annum, isActive: policy.isActive, Company: {name: policy['Company.name']}, tags}
+    var data = {id: policy.id, type: policy['PolicyType.type'], name: policy.name, cover_amt: policy.cover_amt, premium_per_month: policy.premium_per_month, premium_per_annum: policy.premium_per_annum, isActive: policy.isActive, Company: {name: policy['Company.name']}, tags, rating: rating ? rating.rating : 0}
 
 
 

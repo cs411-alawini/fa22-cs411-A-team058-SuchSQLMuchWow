@@ -19,8 +19,13 @@ const populatePolicy = async (id, setPolicy) => {
 
 const ViewInsurance = () => {
     const { id } = useParams()
-    const [policy, setPolicy] = useState({})
-    const [rating, setRating] = React.useState<number | null>(2);
+    const [policy, setPolicy] = useState<any>({rating: 0})
+    // const [rating, setRating] = React.useState<number | null>(0);
+
+    const policyService = new PolicyService()
+    const updateRating = async (rating) => {
+        await policyService.updateRating(policy.id, rating)
+    }
 
     useEffect(() => {
         populatePolicy(id, setPolicy).catch(console.error)
@@ -58,9 +63,10 @@ const ViewInsurance = () => {
                     <Typography component="legend">Rate this policy: </Typography>
                     <Rating
                         name="simple-controlled"
-                        value={rating}
-                        onChange={(event, newValue) => {
-                            setRating(newValue);
+                        value={policy.rating}
+                        onChange={async (event, newValue) => {
+                            setPolicy({...policy, rating: newValue});
+                            await updateRating(newValue)
                         }}
                         size='large'
                     />

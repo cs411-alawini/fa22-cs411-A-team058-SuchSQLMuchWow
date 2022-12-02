@@ -88,4 +88,8 @@ export class LoginService {
         return tokenData.role
     }
 
+    static logout() {
+        localStorage.removeItem('jwtToken')
+    }
+
 }

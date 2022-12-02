@@ -19,7 +19,7 @@
     padding-left: 20px;
 }
 
-.links > span {
+/* .links > span {
     padding-right: 10px;
 }
 
@@ -31,4 +31,8 @@
 
 .navContainer > a > button {
     color: white;
+} */
+
+.navContainer > a {
+    margin-right: 10px
 }

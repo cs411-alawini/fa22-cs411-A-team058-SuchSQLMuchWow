@@ -7,13 +7,13 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const jwt = require('jsonwebtoken');
 
-async function isValidPassword(hashedPassword, password) {
-  let result = await bcrypt.compare(password, hashedPassword)
-  if(result)
-      return true
+// async function isValidPassword(hashedPassword, password) {
+//   let result = await bcrypt.compare(password, hashedPassword)
+//   if(result)
+//       return true
   
-  return false
-} 
+//   return false
+// } 
 
 passport.use(new LocalStrategy(
   {
