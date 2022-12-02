@@ -127,8 +127,8 @@ const InsuranceList = () => {
                         </CardActionArea>
                         <CardActions>
 
-                            {!isUserRole && <button onClick={(event) => handleOnEditInsuranceClick(event, id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>}
-                            {!isUserRole && <button onClick={(event) => handleOnDeleteInsuranceClick(event, id)}><img src="./delete.png" alt="Edit Button" /></button>}
+                            {isUserRole == 3 && <button onClick={(event) => handleOnEditInsuranceClick(event, id)}><img src="./edit.png" alt="Edit Button" className="editBtn" /></button>}
+                            {isUserRole == 3 && <button onClick={(event) => handleOnDeleteInsuranceClick(event, id)}><img src="./delete.png" alt="Edit Button" /></button>}
                             
                         </CardActions>
                     </Card>

@@ -70,6 +70,8 @@ export class LoginService {
         if(token === null)
             return null
         let tokenData: {token: string, role: number, expiresAt: Date} = JSON.parse(token)
+        console.log(tokenData, "hereeeee")
+
         if(Date.now() > new Date(tokenData.expiresAt).getTime()) {
             return null
         }

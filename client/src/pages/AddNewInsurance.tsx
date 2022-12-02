@@ -89,7 +89,7 @@ export class AddNewInsurance extends React.Component<any, any> {
         else {
             try {
                 await this.policyService.addPolicy(this.state['values'])
-                this.setState({values: {'policyType': '1'}})
+                this.setState({values: {'policyType': '1', tags: []}})
                 alert('Policy created successfully')
             } catch (e: any) {
                 alert(e.message)

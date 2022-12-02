@@ -111,14 +111,33 @@ router.get('/getPolicy/:id', passport.authenticate('jwt', { session: false }), a
 router.post("/getAllPolicies", passport.authenticate('jwt', { session: false }),  async (req, res) => {
     // const policyList = await InsurancePolicy.findAll();
     const {searchString, page, pageCount} = req.body
+    const userId = req.user.id
+    const role = req.user.user_type
+    let data
+    if(role == 3)
+        data = (await Employ.findOne({where: {UserId: userId}})).CompanyId
+
+    console.log(data)
 
     if(searchString.length === 0) {
 
-        var count = await InsurancePolicy.count({where: {isActive: true}})
-        var policies = await InsurancePolicy.findAll({where: {isActive: true},include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount});
+        if(role == 2) {
+            var count = await InsurancePolicy.count({where: {isActive: true}})
+            var policies = await InsurancePolicy.findAll({where: {isActive: true},include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount});
+        }
+        else {
+            var count = await InsurancePolicy.count({where: {isActive: true, company_id: data}})
+            var policies = await InsurancePolicy.findAll({where: {isActive: true, company_id: data},include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount});
+        }
+
     } else {
-        var count = await InsurancePolicy.count({where: {name: {[Op.substring]: searchString}, isActive: true}})
-        var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true}, include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount})
+        if(role == 2) {
+            var count = await InsurancePolicy.count({where: {name: {[Op.substring]: searchString}, isActive: true}})
+            var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true}, include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount})
+        } else {
+            var count = await InsurancePolicy.count({where: {name: {[Op.substring]: searchString}, isActive: true, company_id: data}})
+            var policies = await InsurancePolicy.findAll({where: {name: {[Op.substring]: searchString}, isActive: true, company_id: data}, include: [Company, PolicyType], raw: true, offset: (page-1)*pageCount, limit: pageCount})
+        }
     }
 
     let filteredPolicies = []
