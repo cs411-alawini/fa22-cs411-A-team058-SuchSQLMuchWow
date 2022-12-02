@@ -33,7 +33,7 @@ const Dashboard = () => {
     const [policyTypeCounts, setPolicyTypeCounts] = useState<any>("")
     const [sliderValue, setSliderValue] = useState<number>(3)
     const [policyRatingList, setPolicyRatingList] = useState<any>([])
-    const [lineChartData, setLineChartData] = useState<any>({})
+    const [lineChartData, setLineChartData] = useState<any>({labels: [], datasets: []})
     const dashboardService = new DashboardService()
 
 
